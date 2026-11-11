@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+
+namespace BCWF.Forms
+{
+    public partial class FrmNhapDiem : Form
+    {
+        public FrmNhapDiem()
+        {
+            InitializeComponent();
+        }
+    }
+}
