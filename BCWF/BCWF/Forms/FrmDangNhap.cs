@@ -14,6 +14,9 @@ namespace BCWF.Forms
     {
         private readonly DataStore _store = DataStore.Instance;
 
+        /// <summary>Tài khoản đang đăng nhập (để trang chủ/trang cá nhân hiển thị thông tin).</summary>
+        public static Models.User? NguoiDungHienTai { get; set; }
+
         public FrmDangNhap()
         {
             InitializeComponent();
@@ -68,6 +71,7 @@ namespace BCWF.Forms
 
             if (taiKhoan != null && string.Equals(taiKhoan.MatKhau, password, StringComparison.Ordinal))
             {
+                NguoiDungHienTai = taiKhoan;
                 MessageBox.Show("Đăng nhập thành công", "Thông báo",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
