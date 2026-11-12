@@ -8,7 +8,7 @@ namespace BCWF.Forms
     /// Chức năng nâng cao: danh sách sinh viên bị cảnh báo học vụ.
     /// Dựa trên điểm trung bình tích lũy và ngưỡng DiemCanhBao trong App.config.
     /// </summary>
-    public partial class FrmCanhBaoHocVu : Form
+    public partial class FrmCanhBaoHocVu : Form, ILamMoiKhiHienThi
     {
         private readonly DataStore _store = DataStore.Instance;
         private readonly DiemService _diemService = new DiemService();
@@ -19,6 +19,12 @@ namespace BCWF.Forms
         }
 
         private void FrmCanhBaoHocVu_Load(object sender, EventArgs e)
+        {
+            LamMoiKhiHienThi();
+        }
+
+        /// <summary>Nạp lại danh sách cảnh báo khi form được hiển thị.</summary>
+        public void LamMoiKhiHienThi()
         {
             // TODO (nâng cao): lấy _diemService.LayDanhSachCanhBao() và đổ lên lvCanhBao.
         }

@@ -31,7 +31,7 @@ BC-WinForm/
     │   └── DiemService.cs        # SV3 + cảnh báo học vụ
     ├── Forms/
     │   ├── FrmMain.cs            # Menu: Hệ Thống, Quản Lý (SV1/SV2/SV3), Báo Cáo
-    │   ├── FrmDangNhap.cs        # Đăng nhập (đang dùng tài khoản demo)
+    │   ├── FrmDangNhap.cs        # Đăng nhập theo danh sách trong users.txt
     │   ├── FrmSinhVien.cs        # SV1 - TreeView Khoa->Lớp, ListView SV, ảnh thẻ, CSV
     │   ├── FrmDangKy.cs          # SV2 - Tab quản lý môn học + tab đăng ký 2 ListBox
     │   ├── FrmNhapDiem.cs        # SV3 - ListView sửa điểm trực tiếp, xuất CSV
@@ -84,6 +84,8 @@ Ghi chú: so với gợi ý trong đề, có thêm cột `Anh` (tên tệp ảnh
 - Service trả về `bool`/`out string thongBao` để form hiển thị lỗi nghiệp vụ.
 - `FrmMain` dùng một vùng nội dung duy nhất (`panelNoiDung`): mỗi lúc chỉ hiển thị một chức năng,
   các form được giữ lại để chuyển qua lại mà không mở thêm cửa sổ và không mất trạng thái.
+- Khi hiển thị lại một form đã mở, `FrmMain` gọi `ILamMoiKhiHienThi.LamMoiKhiHienThi()`
+  để form nạp lại dữ liệu mới nhất.
 - Các chỗ cần làm đều được đánh dấu `TODO (SV1|SV2|SV3|nâng cao)`.
 
 ## Chạy
@@ -93,4 +95,5 @@ dotnet build BCWF/BCWF/BCWF.csproj
 dotnet run --project BCWF/BCWF/BCWF.csproj
 ```
 
-Tài khoản demo: `admin` / `12345` (dữ liệu mẫu trong `Data/users.txt`).
+Tài khoản mẫu trong `Data/users.txt`: `admin` / `12345` hoặc `giaoVu` / `12345`.
+Thư mục `Data/Images` có sẵn ba ảnh thẻ mẫu `SV001.png`, `SV002.png`, `SV004.png`.

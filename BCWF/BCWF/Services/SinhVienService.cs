@@ -16,13 +16,34 @@ namespace BCWF.Services
         /// <summary>Lấy danh sách sinh viên thuộc một khoa (dùng khi chọn nút Khoa trên TreeView).</summary>
         public List<SinhVien> LayTheoKhoa(string maKhoa)
         {
-            throw new NotImplementedException("TODO (SV1): lọc sinh viên theo khoa.");
+            if (string.IsNullOrWhiteSpace(maKhoa))
+            {
+                return new List<SinhVien>();
+            }
+
+            var maLopCuaKhoa = _store.Lops
+                .Where(lop => string.Equals(lop.MaKhoa, maKhoa, StringComparison.OrdinalIgnoreCase))
+                .Select(lop => lop.MaLop)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return _store.SinhViens
+                .Where(sv => maLopCuaKhoa.Contains(sv.MaLop))
+                .OrderBy(sv => sv.MSSV)
+                .ToList();
         }
 
         /// <summary>Lấy danh sách sinh viên thuộc một lớp (dùng khi chọn nút Lớp trên TreeView).</summary>
         public List<SinhVien> LayTheoMaLop(string maLop)
         {
-            throw new NotImplementedException("TODO (SV1): lọc sinh viên theo lớp.");
+            if (string.IsNullOrWhiteSpace(maLop))
+            {
+                return new List<SinhVien>();
+            }
+
+            return _store.SinhViens
+                .Where(sv => string.Equals(sv.MaLop, maLop, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(sv => sv.MSSV)
+                .ToList();
         }
 
         /// <summary>Kiểm tra MSSV đã tồn tại hay chưa (bỏ qua chính sinh viên đang sửa).</summary>

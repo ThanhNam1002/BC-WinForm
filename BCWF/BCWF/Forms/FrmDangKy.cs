@@ -9,7 +9,7 @@ namespace BCWF.Forms
     /// Tab 1 quản lý môn học; tab 2 đăng ký bằng cách chuyển môn giữa 2 ListBox,
     /// kiểm tra tổng tín chỉ MinTC - MaxTC và chống đăng ký trùng môn.
     /// </summary>
-    public partial class FrmDangKy : Form
+    public partial class FrmDangKy : Form, ILamMoiKhiHienThi
     {
         private readonly DataStore _store = DataStore.Instance;
         private readonly DangKyService _dangKyService = new DangKyService();
@@ -20,6 +20,12 @@ namespace BCWF.Forms
         }
 
         private void FrmDangKy_Load(object sender, EventArgs e)
+        {
+            LamMoiKhiHienThi();
+        }
+
+        /// <summary>Nạp lại môn học, lớp, sinh viên và học kỳ khi form được hiển thị.</summary>
+        public void LamMoiKhiHienThi()
         {
             // TODO (SV2): nạp danh sách môn học, lớp, sinh viên; chọn học kỳ mặc định từ App.config.
         }

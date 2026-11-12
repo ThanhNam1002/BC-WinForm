@@ -10,7 +10,7 @@ namespace BCWF.Forms
     /// (30% QT + 30% GK + 40% CK), xếp loại, tô đỏ môn rớt, điểm trung bình tích lũy
     /// và xuất bảng điểm của lớp ra CSV.
     /// </summary>
-    public partial class FrmNhapDiem : Form
+    public partial class FrmNhapDiem : Form, ILamMoiKhiHienThi
     {
         private readonly DataStore _store = DataStore.Instance;
         private readonly DiemService _diemService = new DiemService();
@@ -21,6 +21,12 @@ namespace BCWF.Forms
         }
 
         private void FrmNhapDiem_Load(object sender, EventArgs e)
+        {
+            LamMoiKhiHienThi();
+        }
+
+        /// <summary>Nạp lại lớp, môn học và học kỳ khi form được hiển thị.</summary>
+        public void LamMoiKhiHienThi()
         {
             // TODO (SV3): nạp danh sách lớp, môn học và chọn học kỳ mặc định.
         }

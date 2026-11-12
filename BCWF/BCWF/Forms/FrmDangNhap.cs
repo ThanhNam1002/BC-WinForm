@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+﻿using BCWF.Models;
+using BCWF.Services;
+using System;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace BCWF.Forms
@@ -13,34 +11,42 @@ namespace BCWF.Forms
         public FrmDangNhap()
         {
             InitializeComponent();
+            ActiveControl = txtUsername;
         }
 
         private void btnDangNhap_Click(object sender, EventArgs e)
         {
-            string username = txtUsername.Text.Trim();
-            string password = txtPassword.Text;
+            string tenDangNhap = txtUsername.Text.Trim();
+            string matKhau = txtPassword.Text;
 
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrWhiteSpace(tenDangNhap) || string.IsNullOrEmpty(matKhau))
             {
                 MessageBox.Show("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.",
                     "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // TODO: kiểm tra tài khoản trong DataStore.Instance.Users (dữ liệu users.txt)
-            // thay cho tài khoản demo bên dưới.
-            if (username == "admin" && password == "12345")
-            {
-                MessageBox.Show("Đăng nhập thành công", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-            }
-            else
+            User? nguoiDung = DataStore.Instance.Users.FirstOrDefault(u =>
+                string.Equals(u.TenDangNhap, tenDangNhap, StringComparison.OrdinalIgnoreCase)
+                && u.MatKhau == matKhau);
+
+            if (nguoiDung == null)
             {
                 MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.",
                     "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtPassword.Clear();
+                txtPassword.Focus();
+                return;
             }
+
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void btnHuy_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
     }
 }

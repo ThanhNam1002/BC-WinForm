@@ -70,13 +70,13 @@ namespace BCWF.Services
             Directory.CreateDirectory(DataFolder);
             Directory.CreateDirectory(ImagesFolder);
 
-            Nap(TepUsers, Users, User.TryParse);
-            Nap(TepKhoa, Khoas, Khoa.TryParse);
-            Nap(TepLop, Lops, Lop.TryParse);
-            Nap(TepSinhVien, SinhViens, SinhVien.TryParse);
-            Nap(TepMonHoc, MonHocs, MonHoc.TryParse);
-            Nap(TepDangKy, DangKys, DangKy.TryParse);
-            Nap(TepLichHoc, LichHocs, LichHoc.TryParse);
+            Nap(TepUsers, Users, User.TryParse, TieuDeUsers);
+            Nap(TepKhoa, Khoas, Khoa.TryParse, TieuDeKhoa);
+            Nap(TepLop, Lops, Lop.TryParse, TieuDeLop);
+            Nap(TepSinhVien, SinhViens, SinhVien.TryParse, TieuDeSinhVien);
+            Nap(TepMonHoc, MonHocs, MonHoc.TryParse, TieuDeMonHoc);
+            Nap(TepDangKy, DangKys, DangKy.TryParse, TieuDeDangKy);
+            Nap(TepLichHoc, LichHocs, LichHoc.TryParse, TieuDeLichHoc);
         }
 
         public void LuuUsers() => Luu(TepUsers, TieuDeUsers, Users, u => u.ToDataLine());
@@ -99,12 +99,20 @@ namespace BCWF.Services
             LuuLichHoc();
         }
 
-        private void Nap<T>(string tenTep, List<T> dich, HamDoc<T> doc) where T : class
+        private void Nap<T>(string tenTep, List<T> dich, HamDoc<T> doc, string dongTieuDe) where T : class
         {
             dich.Clear();
-            foreach (string dong in FileHelpers.DocDong(LayDuongDan(tenTep)))
+            List<string> cacDong = FileHelpers.DocDong(LayDuongDan(tenTep));
+
+            // Bỏ dòng tiêu đề nếu tệp có (tệp do DataStore ghi luôn có tiêu đề).
+            int batDau = cacDong.Count > 0
+                && string.Equals(cacDong[0].Trim(), dongTieuDe, StringComparison.OrdinalIgnoreCase)
+                    ? 1
+                    : 0;
+
+            for (int i = batDau; i < cacDong.Count; i++)
             {
-                if (doc(dong, out T? banGhi) && banGhi != null)
+                if (doc(cacDong[i], out T? banGhi) && banGhi != null)
                 {
                     dich.Add(banGhi);
                 }

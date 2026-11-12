@@ -1,3 +1,4 @@
+using BCWF.Forms;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -22,6 +23,12 @@ namespace BCWF
         {
             if (_cacFormDaMo.TryGetValue(typeof(T), out Form? formDangMo) && formDangMo != null && !formDangMo.IsDisposed)
             {
+                // Quay lại form đang ẩn: nạp lại dữ liệu để không hiển thị thông tin cũ.
+                if (!formDangMo.Visible && formDangMo is ILamMoiKhiHienThi formLamMoi)
+                {
+                    formLamMoi.LamMoiKhiHienThi();
+                }
+
                 HienThiForm(formDangMo);
                 return;
             }

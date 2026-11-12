@@ -35,7 +35,6 @@
             txtPassword = new TextBox();
             btnDangNhap = new Button();
             btnHuy = new Button();
-            lnkDangKy = new LinkLabel();
             SuspendLayout();
             // 
             // lblTitle
@@ -46,7 +45,7 @@
             lblTitle.Name = "lblTitle";
             lblTitle.Size = new Size(161, 32);
             lblTitle.TabIndex = 0;
-            lblTitle.Text = "DANG NHAP";
+            lblTitle.Text = "ĐĂNG NHẬP";
             // 
             // lblUsername
             // 
@@ -55,7 +54,7 @@
             lblUsername.Name = "lblUsername";
             lblUsername.Size = new Size(110, 20);
             lblUsername.TabIndex = 1;
-            lblUsername.Text = "Ten dang nhap:";
+            lblUsername.Text = "Tên đăng nhập:";
             // 
             // txtUsername
             // 
@@ -72,7 +71,7 @@
             lblPassword.Name = "lblPassword";
             lblPassword.Size = new Size(73, 20);
             lblPassword.TabIndex = 3;
-            lblPassword.Text = "Mat khau:";
+            lblPassword.Text = "Mật khẩu:";
             // 
             // txtPassword
             // 
@@ -90,7 +89,7 @@
             btnDangNhap.Name = "btnDangNhap";
             btnDangNhap.Size = new Size(109, 40);
             btnDangNhap.TabIndex = 5;
-            btnDangNhap.Text = "Dang nhap";
+            btnDangNhap.Text = "Đăng nhập";
             btnDangNhap.UseVisualStyleBackColor = true;
             btnDangNhap.Click += btnDangNhap_Click;
             // 
@@ -101,25 +100,17 @@
             btnHuy.Name = "btnHuy";
             btnHuy.Size = new Size(109, 40);
             btnHuy.TabIndex = 6;
-            btnHuy.Text = "Huy";
+            btnHuy.Text = "Hủy";
             btnHuy.UseVisualStyleBackColor = true;
-            // 
-            // lnkDangKy
-            // 
-            lnkDangKy.AutoSize = true;
-            lnkDangKy.Location = new Point(183, 293);
-            lnkDangKy.Name = "lnkDangKy";
-            lnkDangKy.Size = new Size(192, 20);
-            lnkDangKy.TabIndex = 7;
-            lnkDangKy.TabStop = true;
-            lnkDangKy.Text = "Chua co tai khoan? Dang ky";
+            btnHuy.Click += btnHuy_Click;
             // 
             // FrmDangNhap
             // 
+            AcceptButton = btnDangNhap;
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(548, 405);
-            Controls.Add(lnkDangKy);
+            CancelButton = btnHuy;
+            ClientSize = new Size(548, 345);
             Controls.Add(btnHuy);
             Controls.Add(btnDangNhap);
             Controls.Add(txtPassword);
@@ -133,7 +124,7 @@
             MinimizeBox = false;
             Name = "FrmDangNhap";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Dang Nhap";
+            Text = "Đăng nhập";
             ResumeLayout(false);
             PerformLayout();
         }
@@ -147,6 +138,5 @@
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Button btnDangNhap;
         private System.Windows.Forms.Button btnHuy;
-        private System.Windows.Forms.LinkLabel lnkDangKy;
     }
 }

@@ -11,6 +11,9 @@
 *.tmp
 *.log
 
-## Ảnh thẻ do người dùng thêm khi chạy (giữ lại thư mục rỗng)
+## Ảnh thẻ do người dùng thêm khi chạy (giữ lại thư mục rỗng và ảnh mẫu)
 BCWF/BCWF/Data/Images/*
 !BCWF/BCWF/Data/Images/.gitkeep
+!BCWF/BCWF/Data/Images/SV001.png
+!BCWF/BCWF/Data/Images/SV002.png
+!BCWF/BCWF/Data/Images/SV004.png
