@@ -20,7 +20,8 @@ namespace BCWF.Forms
             pictureBox1.SizeChanged += (s, e) => MakePictureBoxCircular(pictureBox1);
             try
             {
-                string imgPath = @"C:\Users\ASUS\Downloads\ThanhNam1002\BC-WinForm\BCWF\anh.png";
+                // Ảnh được copy ra thư mục Resources cạnh tệp chạy (xem BCWF.csproj).
+                string imgPath = System.IO.Path.Combine(AppContext.BaseDirectory, "Resources", "anh.png");
                 if (System.IO.File.Exists(imgPath))
                 {
                     using (var stream = new System.IO.FileStream(imgPath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
