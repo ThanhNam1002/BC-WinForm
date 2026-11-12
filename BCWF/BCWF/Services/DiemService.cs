@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace BCWF.Services
 {
-    /// <summary>
+    /// <summary>//
     /// SV3 - Điểm.
     /// Tính điểm tổng kết theo trọng số 30% quá trình + 30% giữa kỳ + 40% cuối kỳ,
     /// xếp loại, tô đỏ môn rớt, điểm trung bình tích lũy và xuất bảng điểm ra CSV.
