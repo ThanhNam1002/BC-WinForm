@@ -30,6 +30,7 @@ BC-WinForm/
     │   ├── DangKyService.cs      # SV2
     │   └── DiemService.cs        # SV3 + cảnh báo học vụ
     ├── Forms/
+    |   ├── FrmDoiMatKhau.cs      # Đổi mật khẩu
     │   ├── FrmMain.cs            # Menu: Hệ Thống, Quản Lý (SV1/SV2/SV3), Báo Cáo
     │   ├── FrmDangNhap.cs        # Đăng nhập (đang dùng tài khoản demo)
     │   ├── FrmSinhVien.cs        # SV1 - TreeView Khoa->Lớp, ListView SV, ảnh thẻ, CSV
