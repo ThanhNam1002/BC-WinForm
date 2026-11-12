@@ -23,13 +23,25 @@ namespace BCWF
             // The MDI client area is used to host child windows; hide the
             // single-content panel so it does not cover them.
             panelNoiDung.Visible = false;
+
+            // Mở trang chủ mặc định ngay sau khi đăng nhập.
+            MoFormCon<Forms.FrmTrangChu>();
+
+            // Mục "Trang chủ" trong menu Hệ thống để quay lại trang chủ.
+            var trangChuMenuItem = new ToolStripMenuItem("Trang chủ")
+            {
+                ShortcutKeys = Keys.Control | Keys.Home
+            };
+            trangChuMenuItem.Click += (s, e) => MoFormCon<Forms.FrmTrangChu>();
+            heThongMenu.DropDownItems.Insert(0, trangChuMenuItem);
+            heThongMenu.DropDownItems.Insert(1, new ToolStripSeparator());
         }
 
         /// <summary>
         /// Mở form chức năng như một cửa sổ MDI con. Mỗi form chỉ tạo một lần;
         /// khi chọn lại thì kích hoạt cửa sổ đã mở thay vì mở cửa sổ mới.
         /// </summary>
-        private void MoFormCon<T>() where T : Form, new()
+        public void MoFormCon<T>() where T : Form, new()
         {
             if (_cacFormDaMo.TryGetValue(typeof(T), out Form? formDangMo) && formDangMo != null && !formDangMo.IsDisposed)
             {
