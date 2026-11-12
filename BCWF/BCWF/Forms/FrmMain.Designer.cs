@@ -37,21 +37,15 @@ namespace BCWF
             nhapDiemMenuItem = new ToolStripMenuItem();
             baoCaoMenu = new ToolStripMenuItem();
             canhBaoHocVuMenuItem = new ToolStripMenuItem();
-            cuaSoMenu = new ToolStripMenuItem();
-            xepChongMenuItem = new ToolStripMenuItem();
-            xepNgangMenuItem = new ToolStripMenuItem();
-            xepDocMenuItem = new ToolStripMenuItem();
-            toolStripSeparator1 = new ToolStripSeparator();
-            dongTatCaMenuItem = new ToolStripMenuItem();
+            panelNoiDung = new Panel();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { heThongMenu, quanLyMenu, baoCaoMenu, cuaSoMenu });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { heThongMenu, quanLyMenu, baoCaoMenu });
             menuStrip1.Location = new Point(0, 0);
-            menuStrip1.MdiWindowListItem = cuaSoMenu;
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1100, 28);
             menuStrip1.TabIndex = 0;
@@ -114,53 +108,21 @@ namespace BCWF
             canhBaoHocVuMenuItem.Text = "Danh sách cảnh báo học vụ";
             canhBaoHocVuMenuItem.Click += canhBaoHocVuMenuItem_Click;
             // 
-            // cuaSoMenu
+            // panelNoiDung
             // 
-            cuaSoMenu.DropDownItems.AddRange(new ToolStripItem[] { xepChongMenuItem, xepNgangMenuItem, xepDocMenuItem, toolStripSeparator1, dongTatCaMenuItem });
-            cuaSoMenu.Name = "cuaSoMenu";
-            cuaSoMenu.Size = new Size(70, 24);
-            cuaSoMenu.Text = "Cửa Sổ";
-            // 
-            // xepChongMenuItem
-            // 
-            xepChongMenuItem.Name = "xepChongMenuItem";
-            xepChongMenuItem.Size = new Size(224, 26);
-            xepChongMenuItem.Text = "Xếp chồng";
-            xepChongMenuItem.Click += xepChongMenuItem_Click;
-            // 
-            // xepNgangMenuItem
-            // 
-            xepNgangMenuItem.Name = "xepNgangMenuItem";
-            xepNgangMenuItem.Size = new Size(224, 26);
-            xepNgangMenuItem.Text = "Xếp ngang";
-            xepNgangMenuItem.Click += xepNgangMenuItem_Click;
-            // 
-            // xepDocMenuItem
-            // 
-            xepDocMenuItem.Name = "xepDocMenuItem";
-            xepDocMenuItem.Size = new Size(224, 26);
-            xepDocMenuItem.Text = "Xếp dọc";
-            xepDocMenuItem.Click += xepDocMenuItem_Click;
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(221, 6);
-            // 
-            // dongTatCaMenuItem
-            // 
-            dongTatCaMenuItem.Name = "dongTatCaMenuItem";
-            dongTatCaMenuItem.Size = new Size(224, 26);
-            dongTatCaMenuItem.Text = "Đóng tất cả";
-            dongTatCaMenuItem.Click += dongTatCaMenuItem_Click;
+            panelNoiDung.Dock = DockStyle.Fill;
+            panelNoiDung.Location = new Point(0, 28);
+            panelNoiDung.Name = "panelNoiDung";
+            panelNoiDung.Size = new Size(1100, 622);
+            panelNoiDung.TabIndex = 1;
             // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1100, 650);
+            Controls.Add(panelNoiDung);
             Controls.Add(menuStrip1);
-            IsMdiContainer = true;
             MainMenuStrip = menuStrip1;
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
@@ -183,11 +145,6 @@ namespace BCWF
         private ToolStripMenuItem nhapDiemMenuItem;
         private ToolStripMenuItem baoCaoMenu;
         private ToolStripMenuItem canhBaoHocVuMenuItem;
-        private ToolStripMenuItem cuaSoMenu;
-        private ToolStripMenuItem xepChongMenuItem;
-        private ToolStripMenuItem xepNgangMenuItem;
-        private ToolStripMenuItem xepDocMenuItem;
-        private ToolStripSeparator toolStripSeparator1;
-        private ToolStripMenuItem dongTatCaMenuItem;
+        private Panel panelNoiDung;
     }
 }

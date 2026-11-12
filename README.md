@@ -30,7 +30,7 @@ BC-WinForm/
     │   ├── DangKyService.cs      # SV2
     │   └── DiemService.cs        # SV3 + cảnh báo học vụ
     ├── Forms/
-    │   ├── FrmMain.cs            # Menu: Hệ Thống, Quản Lý (SV1/SV2/SV3), Báo Cáo, Cửa Sổ
+    │   ├── FrmMain.cs            # Menu: Hệ Thống, Quản Lý (SV1/SV2/SV3), Báo Cáo
     │   ├── FrmDangNhap.cs        # Đăng nhập (đang dùng tài khoản demo)
     │   ├── FrmSinhVien.cs        # SV1 - TreeView Khoa->Lớp, ListView SV, ảnh thẻ, CSV
     │   ├── FrmDangKy.cs          # SV2 - Tab quản lý môn học + tab đăng ký 2 ListBox
@@ -82,7 +82,8 @@ Ghi chú: so với gợi ý trong đề, có thêm cột `Anh` (tên tệp ảnh
 - Đọc/ghi dữ liệu chỉ qua `DataStore.Instance`; sau khi sửa danh sách thì gọi `LuuSinhVien()`,
   `LuuMonHoc()`, `LuuDangKy()`... tương ứng.
 - Service trả về `bool`/`out string thongBao` để form hiển thị lỗi nghiệp vụ.
-- Form mở dạng MDI con từ `FrmMain`; mỗi form chỉ mở một lần.
+- `FrmMain` dùng một vùng nội dung duy nhất (`panelNoiDung`): mỗi lúc chỉ hiển thị một chức năng,
+  các form được giữ lại để chuyển qua lại mà không mở thêm cửa sổ và không mất trạng thái.
 - Các chỗ cần làm đều được đánh dấu `TODO (SV1|SV2|SV3|nâng cao)`.
 
 ## Chạy
