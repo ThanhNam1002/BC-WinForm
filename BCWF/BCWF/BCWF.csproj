@@ -6,6 +6,14 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>BCWF</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Cấu hình ứng dụng: copy cạnh tệp chạy để AppConfig đọc được -->
+    <None Update="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

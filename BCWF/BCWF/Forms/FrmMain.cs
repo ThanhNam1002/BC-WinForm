@@ -1,12 +1,4 @@
-using BCWF.Forms;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BCWF
@@ -17,152 +9,85 @@ namespace BCWF
         {
             InitializeComponent();
         }
-        #region 1. Menu Hệ Thống
-        private void dangNhapToolStripMenuItem_Click(object sender, EventArgs e)
+
+        /// <summary>Mở form con dạng MDI, nếu đã mở thì chỉ kích hoạt lại.</summary>
+        private void MoFormCon<T>() where T : Form, new()
         {
-            foreach (Form f in this.MdiChildren)
+            foreach (Form form in MdiChildren)
             {
-                if (f is FrmDangNhap)
+                if (form is T)
                 {
-                    f.Activate();
+                    form.Activate();
                     return;
                 }
             }
 
-            FrmDangNhap dangNhapItem = new FrmDangNhap();
-            dangNhapItem.MdiParent = this;
-            dangNhapItem.Show();
+            var formCon = new T { MdiParent = this };
+            formCon.Show();
         }
 
-        private void doiMatKhauToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (Form f in this.MdiChildren)
-            {
-                if (f is FrmDoiMatKhau)
-                {
-                    f.Activate();
-                    return;
-                }
-            }
+        #region Hệ thống
 
-            FrmDoiMatKhau doiMatKhauItem = new FrmDoiMatKhau();
-            doiMatKhauItem.MdiParent = this;
-            doiMatKhauItem.Show();
-        }
-        private void thoatToolStripMenuItem_Click(object sender, EventArgs e)
+        private void thoatMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
+
         #endregion
 
-        #region 2. Menu Quản Lý Danh Mục
-        private void quanLySinhVienLopToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (Form f in this.MdiChildren)
-            {
-                if (f is FrmSinhVien)
-                {
-                    f.Activate();
-                    return;
-                }
-            }
+        #region Quản lý
 
-            FrmSinhVien svItem = new FrmSinhVien();
-            svItem.MdiParent = this;
-            svItem.Show();
+        private void quanLySinhVienLopMenuItem_Click(object sender, EventArgs e)
+        {
+            MoFormCon<Forms.FrmSinhVien>();
         }
 
-        private void dangKyHocPhanToolStripMenuItem_Click(object sender, EventArgs e)
+        private void dangKyHocPhanMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Form f in this.MdiChildren)
-            {
-                if (f is FrmDangKy)
-                {
-                    f.Activate();
-                    return;
-                }
-            }
-
-            FrmDangKy dkhpItem = new FrmDangKy();
-            dkhpItem.MdiParent = this;
-            dkhpItem.Show();
+            MoFormCon<Forms.FrmDangKy>();
         }
 
-        private void nhapDiemBangDiemToolStripMenuItem_Click(object sender, EventArgs e)
+        private void nhapDiemMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Form f in this.MdiChildren)
-            {
-                if (f is FrmNhapDiem)
-                {
-                    f.Activate();
-                    return;
-                }
-            }
-
-            FrmNhapDiem nhapDiemItem = new FrmNhapDiem();
-            nhapDiemItem.MdiParent = this;
-            nhapDiemItem.Show();
+            MoFormCon<Forms.FrmNhapDiem>();
         }
+
         #endregion
 
-        #region 3. Menu Thống Kê
-        private void saoLuuKhoiPhucDuLieuToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (Form f in this.MdiChildren)
-            {
-                if (f is FrmSaoLuuBaoCao)
-                {
-                    f.Activate();
-                    return;
-                }
-            }
+        #region Báo cáo
 
-            FrmSaoLuuBaoCao saoLuuItem = new FrmSaoLuuBaoCao();
-            saoLuuItem.MdiParent = this;
-            saoLuuItem.Show();
+        private void canhBaoHocVuMenuItem_Click(object sender, EventArgs e)
+        {
+            MoFormCon<Forms.FrmCanhBaoHocVu>();
         }
 
-        private void xuatBaoCaoThongKeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (Form f in this.MdiChildren)
-            {
-                if (f is FrmSaoLuuBaoCao)
-                {
-                    f.Activate();
-                    return;
-                }
-            }
-
-            FrmSaoLuuBaoCao baoCaoItem = new FrmSaoLuuBaoCao();
-            baoCaoItem.MdiParent = this;
-            baoCaoItem.Show();
-        }
         #endregion
 
-        #region 4. Menu Cửa Sổ
-        private void xepChongToolStripMenuItem_Click(object sender, EventArgs e)
+        #region Cửa sổ
+
+        private void xepChongMenuItem_Click(object sender, EventArgs e)
         {
-            this.LayoutMdi(MdiLayout.Cascade);
+            LayoutMdi(MdiLayout.Cascade);
         }
 
-        private void xepNgangToolStripMenuItem_Click(object sender, EventArgs e)
+        private void xepNgangMenuItem_Click(object sender, EventArgs e)
         {
-            this.LayoutMdi(MdiLayout.TileHorizontal);
+            LayoutMdi(MdiLayout.TileHorizontal);
         }
 
-        private void xepDocToolStripMenuItem_Click(object sender, EventArgs e)
+        private void xepDocMenuItem_Click(object sender, EventArgs e)
         {
-            this.LayoutMdi(MdiLayout.TileVertical);
+            LayoutMdi(MdiLayout.TileVertical);
         }
 
-        private void dongTatCaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void dongTatCaMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Form f in this.MdiChildren)
+            foreach (Form form in MdiChildren)
             {
-                f.Close();
+                form.Close();
             }
         }
-        #endregion
 
+        #endregion
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BCWF
+namespace BCWF
 {
     partial class FrmMain
     {
@@ -29,170 +29,142 @@
         private void InitializeComponent()
         {
             menuStrip1 = new MenuStrip();
-            hệThốngToolStripMenuItem = new ToolStripMenuItem();
-            dangNhapToolStripMenuItem = new ToolStripMenuItem();
-            doiMatKhauToolStripMenuItem = new ToolStripMenuItem();
+            heThongMenu = new ToolStripMenuItem();
+            thoatMenuItem = new ToolStripMenuItem();
+            quanLyMenu = new ToolStripMenuItem();
+            quanLySinhVienLopMenuItem = new ToolStripMenuItem();
+            dangKyHocPhanMenuItem = new ToolStripMenuItem();
+            nhapDiemMenuItem = new ToolStripMenuItem();
+            baoCaoMenu = new ToolStripMenuItem();
+            canhBaoHocVuMenuItem = new ToolStripMenuItem();
+            cuaSoMenu = new ToolStripMenuItem();
+            xepChongMenuItem = new ToolStripMenuItem();
+            xepNgangMenuItem = new ToolStripMenuItem();
+            xepDocMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
-            ThoatToolStripMenuItem = new ToolStripMenuItem();
-            quảnLýDanhMụcToolStripMenuItem = new ToolStripMenuItem();
-            quanLySinhVienLopToolStripMenuItem = new ToolStripMenuItem();
-            dangKyHocPhanToolStripMenuItem = new ToolStripMenuItem();
-            nhapDiemBangDiemToolStripMenuItem = new ToolStripMenuItem();
-            báoCáoTiệnÍchToolStripMenuItem = new ToolStripMenuItem();
-            saoLuuKhoiPhucDuLieuToolStripMenuItem = new ToolStripMenuItem();
-            xuatBaoCaoThongKeToolStripMenuItem = new ToolStripMenuItem();
-            cửaSổToolStripMenuItem = new ToolStripMenuItem();
-            xepChongToolStripMenuItem = new ToolStripMenuItem();
-            xepNgangToolStripMenuItem = new ToolStripMenuItem();
-            xepDocToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator2 = new ToolStripSeparator();
-            dongTatCaToolStripMenuItem = new ToolStripMenuItem();
+            dongTatCaMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { hệThốngToolStripMenuItem, quảnLýDanhMụcToolStripMenuItem, báoCáoTiệnÍchToolStripMenuItem, cửaSổToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { heThongMenu, quanLyMenu, baoCaoMenu, cuaSoMenu });
             menuStrip1.Location = new Point(0, 0);
+            menuStrip1.MdiWindowListItem = cuaSoMenu;
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(800, 28);
-            menuStrip1.TabIndex = 1;
+            menuStrip1.Size = new Size(1100, 28);
+            menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
-            // hệThốngToolStripMenuItem
+            // heThongMenu
             // 
-            hệThốngToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { dangNhapToolStripMenuItem, doiMatKhauToolStripMenuItem, toolStripSeparator1, ThoatToolStripMenuItem });
-            hệThốngToolStripMenuItem.Name = "hệThốngToolStripMenuItem";
-            hệThốngToolStripMenuItem.Size = new Size(88, 24);
-            hệThốngToolStripMenuItem.Text = "Hệ Thống";
+            heThongMenu.DropDownItems.AddRange(new ToolStripItem[] { thoatMenuItem });
+            heThongMenu.Name = "heThongMenu";
+            heThongMenu.Size = new Size(88, 24);
+            heThongMenu.Text = "Hệ Thống";
             // 
-            // dangNhapToolStripMenuItem
+            // thoatMenuItem
             // 
-            dangNhapToolStripMenuItem.Name = "dangNhapToolStripMenuItem";
-            dangNhapToolStripMenuItem.Size = new Size(183, 26);
-            dangNhapToolStripMenuItem.Text = "Đăng Nhập";
-            dangNhapToolStripMenuItem.Click += dangNhapToolStripMenuItem_Click;
+            thoatMenuItem.Name = "thoatMenuItem";
+            thoatMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
+            thoatMenuItem.Size = new Size(180, 26);
+            thoatMenuItem.Text = "Thoát";
+            thoatMenuItem.Click += thoatMenuItem_Click;
             // 
-            // doiMatKhauToolStripMenuItem
+            // quanLyMenu
             // 
-            doiMatKhauToolStripMenuItem.Name = "doiMatKhauToolStripMenuItem";
-            doiMatKhauToolStripMenuItem.Size = new Size(183, 26);
-            doiMatKhauToolStripMenuItem.Text = "Đổi Mật Khẩu";
-            doiMatKhauToolStripMenuItem.Click += doiMatKhauToolStripMenuItem_Click;
+            quanLyMenu.DropDownItems.AddRange(new ToolStripItem[] { quanLySinhVienLopMenuItem, dangKyHocPhanMenuItem, nhapDiemMenuItem });
+            quanLyMenu.Name = "quanLyMenu";
+            quanLyMenu.Size = new Size(76, 24);
+            quanLyMenu.Text = "Quản Lý";
+            // 
+            // quanLySinhVienLopMenuItem
+            // 
+            quanLySinhVienLopMenuItem.Name = "quanLySinhVienLopMenuItem";
+            quanLySinhVienLopMenuItem.Size = new Size(291, 26);
+            quanLySinhVienLopMenuItem.Text = "SV1 - Sinh viên && Lớp";
+            quanLySinhVienLopMenuItem.Click += quanLySinhVienLopMenuItem_Click;
+            // 
+            // dangKyHocPhanMenuItem
+            // 
+            dangKyHocPhanMenuItem.Name = "dangKyHocPhanMenuItem";
+            dangKyHocPhanMenuItem.Size = new Size(291, 26);
+            dangKyHocPhanMenuItem.Text = "SV2 - Đăng ký học phần";
+            dangKyHocPhanMenuItem.Click += dangKyHocPhanMenuItem_Click;
+            // 
+            // nhapDiemMenuItem
+            // 
+            nhapDiemMenuItem.Name = "nhapDiemMenuItem";
+            nhapDiemMenuItem.Size = new Size(291, 26);
+            nhapDiemMenuItem.Text = "SV3 - Nhập điểm && Bảng điểm";
+            nhapDiemMenuItem.Click += nhapDiemMenuItem_Click;
+            // 
+            // baoCaoMenu
+            // 
+            baoCaoMenu.DropDownItems.AddRange(new ToolStripItem[] { canhBaoHocVuMenuItem });
+            baoCaoMenu.Name = "baoCaoMenu";
+            baoCaoMenu.Size = new Size(76, 24);
+            baoCaoMenu.Text = "Báo Cáo";
+            // 
+            // canhBaoHocVuMenuItem
+            // 
+            canhBaoHocVuMenuItem.Name = "canhBaoHocVuMenuItem";
+            canhBaoHocVuMenuItem.Size = new Size(291, 26);
+            canhBaoHocVuMenuItem.Text = "Danh sách cảnh báo học vụ";
+            canhBaoHocVuMenuItem.Click += canhBaoHocVuMenuItem_Click;
+            // 
+            // cuaSoMenu
+            // 
+            cuaSoMenu.DropDownItems.AddRange(new ToolStripItem[] { xepChongMenuItem, xepNgangMenuItem, xepDocMenuItem, toolStripSeparator1, dongTatCaMenuItem });
+            cuaSoMenu.Name = "cuaSoMenu";
+            cuaSoMenu.Size = new Size(70, 24);
+            cuaSoMenu.Text = "Cửa Sổ";
+            // 
+            // xepChongMenuItem
+            // 
+            xepChongMenuItem.Name = "xepChongMenuItem";
+            xepChongMenuItem.Size = new Size(224, 26);
+            xepChongMenuItem.Text = "Xếp chồng";
+            xepChongMenuItem.Click += xepChongMenuItem_Click;
+            // 
+            // xepNgangMenuItem
+            // 
+            xepNgangMenuItem.Name = "xepNgangMenuItem";
+            xepNgangMenuItem.Size = new Size(224, 26);
+            xepNgangMenuItem.Text = "Xếp ngang";
+            xepNgangMenuItem.Click += xepNgangMenuItem_Click;
+            // 
+            // xepDocMenuItem
+            // 
+            xepDocMenuItem.Name = "xepDocMenuItem";
+            xepDocMenuItem.Size = new Size(224, 26);
+            xepDocMenuItem.Text = "Xếp dọc";
+            xepDocMenuItem.Click += xepDocMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(180, 6);
+            toolStripSeparator1.Size = new Size(221, 6);
             // 
-            // ThoatToolStripMenuItem
+            // dongTatCaMenuItem
             // 
-            ThoatToolStripMenuItem.Name = "ThoatToolStripMenuItem";
-            ThoatToolStripMenuItem.Size = new Size(183, 26);
-            ThoatToolStripMenuItem.Text = "Thoát";
-            ThoatToolStripMenuItem.Click += thoatToolStripMenuItem_Click;
-            // 
-            // quảnLýDanhMụcToolStripMenuItem
-            // 
-            quảnLýDanhMụcToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { quanLySinhVienLopToolStripMenuItem, dangKyHocPhanToolStripMenuItem, nhapDiemBangDiemToolStripMenuItem });
-            quảnLýDanhMụcToolStripMenuItem.Name = "quảnLýDanhMụcToolStripMenuItem";
-            quảnLýDanhMụcToolStripMenuItem.Size = new Size(146, 24);
-            quảnLýDanhMụcToolStripMenuItem.Text = "Quản Lý Danh Mục";
-            // 
-            // quanLySinhVienLopToolStripMenuItem
-            // 
-            quanLySinhVienLopToolStripMenuItem.Name = "quanLySinhVienLopToolStripMenuItem";
-            quanLySinhVienLopToolStripMenuItem.Size = new Size(256, 26);
-            quanLySinhVienLopToolStripMenuItem.Text = "Quản Lý Sinh Viên - Lớp";
-            quanLySinhVienLopToolStripMenuItem.Click += quanLySinhVienLopToolStripMenuItem_Click;
-            // 
-            // dangKyHocPhanToolStripMenuItem
-            // 
-            dangKyHocPhanToolStripMenuItem.Name = "dangKyHocPhanToolStripMenuItem";
-            dangKyHocPhanToolStripMenuItem.Size = new Size(256, 26);
-            dangKyHocPhanToolStripMenuItem.Text = "Đăng Ký Học Phần";
-            dangKyHocPhanToolStripMenuItem.Click += dangKyHocPhanToolStripMenuItem_Click;
-            // 
-            // nhapDiemBangDiemToolStripMenuItem
-            // 
-            nhapDiemBangDiemToolStripMenuItem.Name = "nhapDiemBangDiemToolStripMenuItem";
-            nhapDiemBangDiemToolStripMenuItem.Size = new Size(256, 26);
-            nhapDiemBangDiemToolStripMenuItem.Text = "Nhập Điểm - Bảng Điểm";
-            nhapDiemBangDiemToolStripMenuItem.Click += nhapDiemBangDiemToolStripMenuItem_Click;
-            // 
-            // báoCáoTiệnÍchToolStripMenuItem
-            // 
-            báoCáoTiệnÍchToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { saoLuuKhoiPhucDuLieuToolStripMenuItem, xuatBaoCaoThongKeToolStripMenuItem });
-            báoCáoTiệnÍchToolStripMenuItem.Name = "báoCáoTiệnÍchToolStripMenuItem";
-            báoCáoTiệnÍchToolStripMenuItem.Size = new Size(144, 24);
-            báoCáoTiệnÍchToolStripMenuItem.Text = "Báo Cáo - Tiện Ích";
-            // 
-            // saoLuuKhoiPhucDuLieuToolStripMenuItem
-            // 
-            saoLuuKhoiPhucDuLieuToolStripMenuItem.Name = "saoLuuKhoiPhucDuLieuToolStripMenuItem";
-            saoLuuKhoiPhucDuLieuToolStripMenuItem.Size = new Size(279, 26);
-            saoLuuKhoiPhucDuLieuToolStripMenuItem.Text = "Sao Lưu - Khôi Phục Dữ Liệu";
-            saoLuuKhoiPhucDuLieuToolStripMenuItem.Click += saoLuuKhoiPhucDuLieuToolStripMenuItem_Click;
-            // 
-            // xuatBaoCaoThongKeToolStripMenuItem
-            // 
-            xuatBaoCaoThongKeToolStripMenuItem.Name = "xuatBaoCaoThongKeToolStripMenuItem";
-            xuatBaoCaoThongKeToolStripMenuItem.Size = new Size(279, 26);
-            xuatBaoCaoThongKeToolStripMenuItem.Text = "Xuất Báo Cáo - Thống Kê";
-            xuatBaoCaoThongKeToolStripMenuItem.Click += xuatBaoCaoThongKeToolStripMenuItem_Click;
-            // 
-            // cửaSổToolStripMenuItem
-            // 
-            cửaSổToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { xepChongToolStripMenuItem, xepNgangToolStripMenuItem, xepDocToolStripMenuItem, toolStripSeparator2, dongTatCaToolStripMenuItem });
-            cửaSổToolStripMenuItem.Name = "cửaSổToolStripMenuItem";
-            cửaSổToolStripMenuItem.Size = new Size(70, 24);
-            cửaSổToolStripMenuItem.Text = "Cửa Sổ";
-            // 
-            // xepChongToolStripMenuItem
-            // 
-            xepChongToolStripMenuItem.Name = "xepChongToolStripMenuItem";
-            xepChongToolStripMenuItem.Size = new Size(224, 26);
-            xepChongToolStripMenuItem.Text = "Xếp Chồng";
-            xepChongToolStripMenuItem.Click += xepChongToolStripMenuItem_Click;
-            // 
-            // xepNgangToolStripMenuItem
-            // 
-            xepNgangToolStripMenuItem.Name = "xepNgangToolStripMenuItem";
-            xepNgangToolStripMenuItem.Size = new Size(224, 26);
-            xepNgangToolStripMenuItem.Text = "Xếp Ngang";
-            xepNgangToolStripMenuItem.Click += xepNgangToolStripMenuItem_Click;
-            // 
-            // xepDocToolStripMenuItem
-            // 
-            xepDocToolStripMenuItem.Name = "xepDocToolStripMenuItem";
-            xepDocToolStripMenuItem.Size = new Size(224, 26);
-            xepDocToolStripMenuItem.Text = "Xếp Dọc";
-            xepDocToolStripMenuItem.Click += xepDocToolStripMenuItem_Click;
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(221, 6);
-            // 
-            // dongTatCaToolStripMenuItem
-            // 
-            dongTatCaToolStripMenuItem.Name = "dongTatCaToolStripMenuItem";
-            dongTatCaToolStripMenuItem.Size = new Size(224, 26);
-            dongTatCaToolStripMenuItem.Text = "Đóng Tất Cả";
-            dongTatCaToolStripMenuItem.Click += dongTatCaToolStripMenuItem_Click;
+            dongTatCaMenuItem.Name = "dongTatCaMenuItem";
+            dongTatCaMenuItem.Size = new Size(224, 26);
+            dongTatCaMenuItem.Text = "Đóng tất cả";
+            dongTatCaMenuItem.Click += dongTatCaMenuItem_Click;
             // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1100, 650);
             Controls.Add(menuStrip1);
             IsMdiContainer = true;
             MainMenuStrip = menuStrip1;
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "HỆ THỐNG QUẢN LÝ ĐIỂM & HỌC PHẦN";
+            Text = "HỆ THỐNG QUẢN LÝ ĐĂNG KÝ HỌC PHẦN & ĐIỂM";
             WindowState = FormWindowState.Maximized;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
@@ -203,23 +175,19 @@
         #endregion
 
         private MenuStrip menuStrip1;
-        private ToolStripMenuItem hệThốngToolStripMenuItem;
-        private ToolStripMenuItem dangNhapToolStripMenuItem;
-        private ToolStripMenuItem doiMatKhauToolStripMenuItem;
+        private ToolStripMenuItem heThongMenu;
+        private ToolStripMenuItem thoatMenuItem;
+        private ToolStripMenuItem quanLyMenu;
+        private ToolStripMenuItem quanLySinhVienLopMenuItem;
+        private ToolStripMenuItem dangKyHocPhanMenuItem;
+        private ToolStripMenuItem nhapDiemMenuItem;
+        private ToolStripMenuItem baoCaoMenu;
+        private ToolStripMenuItem canhBaoHocVuMenuItem;
+        private ToolStripMenuItem cuaSoMenu;
+        private ToolStripMenuItem xepChongMenuItem;
+        private ToolStripMenuItem xepNgangMenuItem;
+        private ToolStripMenuItem xepDocMenuItem;
         private ToolStripSeparator toolStripSeparator1;
-        private ToolStripMenuItem ThoatToolStripMenuItem;
-        private ToolStripMenuItem quảnLýDanhMụcToolStripMenuItem;
-        private ToolStripMenuItem quanLySinhVienLopToolStripMenuItem;
-        private ToolStripMenuItem dangKyHocPhanToolStripMenuItem;
-        private ToolStripMenuItem nhapDiemBangDiemToolStripMenuItem;
-        private ToolStripMenuItem báoCáoTiệnÍchToolStripMenuItem;
-        private ToolStripMenuItem saoLuuKhoiPhucDuLieuToolStripMenuItem;
-        private ToolStripMenuItem xuatBaoCaoThongKeToolStripMenuItem;
-        private ToolStripMenuItem cửaSổToolStripMenuItem;
-        private ToolStripMenuItem xepChongToolStripMenuItem;
-        private ToolStripMenuItem xepNgangToolStripMenuItem;
-        private ToolStripMenuItem xepDocToolStripMenuItem;
-        private ToolStripSeparator toolStripSeparator2;
-        private ToolStripMenuItem dongTatCaToolStripMenuItem;
+        private ToolStripMenuItem dongTatCaMenuItem;
     }
 }

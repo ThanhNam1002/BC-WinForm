@@ -27,7 +27,8 @@ namespace BCWF.Forms
                 return;
             }
 
-            //Kiem tra dang nhap (demo). Thay bang logic thuc te neu can.
+            // TODO: kiểm tra tài khoản trong DataStore.Instance.Users (dữ liệu users.txt)
+            // thay cho tài khoản demo bên dưới.
             if (username == "admin" && password == "12345")
             {
                 MessageBox.Show("Đăng nhập thành công", "Thông báo",
