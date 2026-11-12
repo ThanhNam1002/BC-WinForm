@@ -1,7 +1,16 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+## Visual Studio / .NET
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
-/.vs
-/BCWF/.vs/BCWF.slnx
-/BCWF/BCWF/obj
+## Tệp tạm
+*.tmp
+*.log
+
+## Ảnh thẻ do người dùng thêm khi chạy (giữ lại thư mục rỗng)
+BCWF/BCWF/Data/Images/*
+!BCWF/BCWF/Data/Images/.gitkeep

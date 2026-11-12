@@ -1,0 +1,5 @@
+MaLop;TenLop;MaKhoa
+CNTT01;CNTT Khoá 1;CNTT
+CNTT02;CNTT Khoá 2;CNTT
+KT01;Kinh tế Khoá 1;KT
+DT01;Điện - Điện tử Khoá 1;DT
