@@ -47,6 +47,12 @@ namespace BCWF.Models
                 return false;
             }
 
+            // Bỏ qua dòng tiêu đề hoặc dòng có MSSV sai định dạng thay vì nạp thành bản ghi rác.
+            if (!SinhVien.IsValidMSSV(cot[0]))
+            {
+                return false;
+            }
+
             dangKy = new DangKy
             {
                 MSSV = cot[0].Trim(),

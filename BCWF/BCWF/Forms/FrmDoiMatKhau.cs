@@ -1,8 +1,10 @@
-﻿using System;
+﻿using BCWF.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -10,6 +12,8 @@ namespace BCWF.Forms
 {
     public partial class FrmDoiMatKhau : Form
     {
+        private readonly DataStore _store = DataStore.Instance;
+
         public FrmDoiMatKhau()
         {
             InitializeComponent();
@@ -31,14 +35,17 @@ namespace BCWF.Forms
                 return;
             }
 
-            if (username != "admin")
+            Models.User? taiKhoan = _store.Users.FirstOrDefault(u =>
+                string.Equals(u.TenDangNhap, username, StringComparison.OrdinalIgnoreCase));
+
+            if (taiKhoan == null)
             {
                 MessageBox.Show("Tên đăng nhập không tồn tại.", "Thông báo",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (oldPassword != FrmDangNhap.MatKhauHienTai)
+            if (!string.Equals(taiKhoan.MatKhau, oldPassword, StringComparison.Ordinal))
             {
                 MessageBox.Show("Mật khẩu cũ không đúng.", "Thông báo",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -59,7 +66,19 @@ namespace BCWF.Forms
                 return;
             }
 
-            FrmDangNhap.MatKhauHienTai = newPassword;
+            try
+            {
+                // Ghi mật khẩu mới xuống users.txt để lần mở sau vẫn dùng được.
+                taiKhoan.MatKhau = newPassword;
+                _store.LuuUsers();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không ghi được tệp users.txt: " + ex.Message, "Lỗi",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             MessageBox.Show("Đổi mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.", "Thông báo",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
             this.DialogResult = DialogResult.OK;
