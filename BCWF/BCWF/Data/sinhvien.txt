@@ -1,6 +1,8 @@
 MSSV;HoTen;NgaySinh;GioiTinh;MaLop;Anh
+MSSV;HoTen;;GioiTinh;MaLop;Anh
 SV001;Nguyễn Văn An;12/03/2005;Nam;CNTT01;SV001.png
 SV002;Trần Thị Bình;25/07/2005;Nữ;CNTT01;SV002.png
 SV003;Lê Hoàng Cường;02/11/2004;Nam;CNTT01;
 SV004;Phạm Thu Dung;18/01/2005;Nữ;CNTT02;SV004.png
 SV005;Đỗ Minh Khang;09/09/2005;Nam;KT01;
+SV006;Phạm Trọng;12/11/2026;Nam;CNTT01;SV006.jpeg

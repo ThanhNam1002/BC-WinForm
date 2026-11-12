@@ -62,7 +62,7 @@ namespace BCWF
             // 
             thoatMenuItem.Name = "thoatMenuItem";
             thoatMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
-            thoatMenuItem.Size = new Size(180, 26);
+            thoatMenuItem.Size = new Size(183, 26);
             thoatMenuItem.Text = "Thoát";
             thoatMenuItem.Click += thoatMenuItem_Click;
             // 
@@ -70,27 +70,27 @@ namespace BCWF
             // 
             quanLyMenu.DropDownItems.AddRange(new ToolStripItem[] { quanLySinhVienLopMenuItem, dangKyHocPhanMenuItem, nhapDiemMenuItem });
             quanLyMenu.Name = "quanLyMenu";
-            quanLyMenu.Size = new Size(76, 24);
-            quanLyMenu.Text = "Quản Lý";
+            quanLyMenu.Size = new Size(146, 24);
+            quanLyMenu.Text = "Quản Lý Danh Mục";
             // 
             // quanLySinhVienLopMenuItem
             // 
             quanLySinhVienLopMenuItem.Name = "quanLySinhVienLopMenuItem";
-            quanLySinhVienLopMenuItem.Size = new Size(291, 26);
+            quanLySinhVienLopMenuItem.Size = new Size(297, 26);
             quanLySinhVienLopMenuItem.Text = "SV1 - Sinh viên && Lớp";
             quanLySinhVienLopMenuItem.Click += quanLySinhVienLopMenuItem_Click;
             // 
             // dangKyHocPhanMenuItem
             // 
             dangKyHocPhanMenuItem.Name = "dangKyHocPhanMenuItem";
-            dangKyHocPhanMenuItem.Size = new Size(291, 26);
+            dangKyHocPhanMenuItem.Size = new Size(297, 26);
             dangKyHocPhanMenuItem.Text = "SV2 - Đăng ký học phần";
             dangKyHocPhanMenuItem.Click += dangKyHocPhanMenuItem_Click;
             // 
             // nhapDiemMenuItem
             // 
             nhapDiemMenuItem.Name = "nhapDiemMenuItem";
-            nhapDiemMenuItem.Size = new Size(291, 26);
+            nhapDiemMenuItem.Size = new Size(297, 26);
             nhapDiemMenuItem.Text = "SV3 - Nhập điểm && Bảng điểm";
             nhapDiemMenuItem.Click += nhapDiemMenuItem_Click;
             // 
@@ -98,13 +98,13 @@ namespace BCWF
             // 
             baoCaoMenu.DropDownItems.AddRange(new ToolStripItem[] { canhBaoHocVuMenuItem });
             baoCaoMenu.Name = "baoCaoMenu";
-            baoCaoMenu.Size = new Size(76, 24);
+            baoCaoMenu.Size = new Size(79, 24);
             baoCaoMenu.Text = "Báo Cáo";
             // 
             // canhBaoHocVuMenuItem
             // 
             canhBaoHocVuMenuItem.Name = "canhBaoHocVuMenuItem";
-            canhBaoHocVuMenuItem.Size = new Size(291, 26);
+            canhBaoHocVuMenuItem.Size = new Size(272, 26);
             canhBaoHocVuMenuItem.Text = "Danh sách cảnh báo học vụ";
             canhBaoHocVuMenuItem.Click += canhBaoHocVuMenuItem_Click;
             // 
@@ -123,6 +123,7 @@ namespace BCWF
             ClientSize = new Size(1100, 650);
             Controls.Add(panelNoiDung);
             Controls.Add(menuStrip1);
+            IsMdiContainer = true;
             MainMenuStrip = menuStrip1;
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
