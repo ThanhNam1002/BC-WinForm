@@ -1,8 +1,10 @@
-﻿using System;
+﻿using BCWF.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -10,7 +12,8 @@ namespace BCWF.Forms
 {
     public partial class FrmDangNhap : Form
     {
-        public static string MatKhauHienTai = "12345";
+        private readonly DataStore _store = DataStore.Instance;
+
         public FrmDangNhap()
         {
             InitializeComponent();
@@ -59,8 +62,11 @@ namespace BCWF.Forms
                 return;
             }
 
-            //Kiểm tra đăng nhâp
-            if (username == "admin" && password == MatKhauHienTai)
+            //Kiểm tra đăng nhâp theo tài khoản trong users.txt
+            Models.User? taiKhoan = _store.Users.FirstOrDefault(u =>
+                string.Equals(u.TenDangNhap, username, StringComparison.OrdinalIgnoreCase));
+
+            if (taiKhoan != null && string.Equals(taiKhoan.MatKhau, password, StringComparison.Ordinal))
             {
                 MessageBox.Show("Đăng nhập thành công", "Thông báo",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
