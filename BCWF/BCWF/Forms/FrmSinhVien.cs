@@ -14,10 +14,21 @@ namespace BCWF.Forms
         private readonly SinhVienService _sinhVienService = new SinhVienService();
 
         private string _anhHienTai = string.Empty;
+        private string _mssvDangChon = string.Empty;
+        private bool _dangSua = false;
+        private SinhVien? _sinhVienNguyenBan = null;
 
         public FrmSinhVien()
         {
             InitializeComponent();
+
+            txtMSSV.CharacterCasing = CharacterCasing.Upper;
+            txtMSSV.ImeMode = ImeMode.Disable;
+            txtMSSV.KeyPress += txtMSSV_KeyPress;
+            txtMSSV.TextChanged += txtMSSV_TextChanged;
+
+            txtHoTen.KeyPress += txtHoTen_KeyPress;
+            txtHoTen.TextChanged += txtHoTen_TextChanged;
         }
 
         private void FrmSinhVien_Load(object sender, EventArgs e)
@@ -25,6 +36,7 @@ namespace BCWF.Forms
             NapCay();
             NapDanhSachLop();
             XoaTrang();
+            HienThiTheoNode(treeKhoaLop.SelectedNode);
         }
 
         //Nạp cây danh sách khoa và lớp
@@ -150,7 +162,6 @@ namespace BCWF.Forms
             }
 
             txtMSSV.Text = sv.MSSV;
-            txtMSSV.ReadOnly = true;
             txtHoTen.Text = sv.HoTen;
             dtpNgaySinh.Value = sv.NgaySinh == DateTime.MinValue ? DateTime.Today : sv.NgaySinh;
             radNam.Checked = !string.Equals(sv.GioiTinh, "Nữ", StringComparison.OrdinalIgnoreCase);
@@ -166,8 +177,18 @@ namespace BCWF.Forms
                 }
             }
 
+            _mssvDangChon = sv.MSSV;
+            _sinhVienNguyenBan = sv;
             _anhHienTai = sv.Anh;
             HienThiAnh(sv.Anh);
+
+            // Chế độ xem: chỉ cho sửa sau khi bấm nút "Sửa".
+            _dangSua = false;
+            DatCheDoNhap(false);
+            if (btnSua != null)
+            {
+                btnSua.Text = "Sửa";
+            }
             #endregion
         }
 
@@ -175,6 +196,12 @@ namespace BCWF.Forms
         private void btnThem_Click(object sender, EventArgs e)
         {
             #region Thêm sinh viên
+            if (_dangSua)
+            {
+                MessageBox.Show("Đang ở chế độ sửa. Hãy lưu thay đổi trước.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             if (!KiemTraDuLieu(out SinhVien? sv) || sv == null)
             {
                 return;
@@ -206,13 +233,29 @@ namespace BCWF.Forms
         private void btnSua_Click(object sender, EventArgs e)
         {
             #region Sửa sinh viên
-            if (lvSinhVien.SelectedItems.Count == 0)
+            if (lvSinhVien.SelectedItems.Count == 0 && string.IsNullOrWhiteSpace(_mssvDangChon))
             {
                 MessageBox.Show("Hãy chọn sinh viên cần sửa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            string mssvDangChon = lvSinhVien.SelectedItems[0].Tag?.ToString() ?? string.Empty;
+            string mssvDangChon = !string.IsNullOrWhiteSpace(_mssvDangChon)
+                ? _mssvDangChon
+                : (lvSinhVien.SelectedItems.Count > 0 ? lvSinhVien.SelectedItems[0].Tag?.ToString() ?? string.Empty : string.Empty);
+
+            // Nếu chưa có thay đổi, bấm "Sửa" để bật chế độ chỉnh sửa.
+            if (!DuLieuDaThayDoi())
+            {
+                DatCheDoNhap(true);
+                _dangSua = true;
+                txtMSSV.ReadOnly = false;
+                txtHoTen.Focus();
+                if (btnSua != null)
+                {
+                    btnSua.Text = "Lưu";
+                }
+                return;
+            }
 
             if (!KiemTraDuLieu(out SinhVien? sv) || sv == null)
             {
@@ -313,6 +356,14 @@ namespace BCWF.Forms
             #region Xóa trắng
             txtMSSV.ReadOnly = false;
             txtMSSV.Clear();
+            _mssvDangChon = string.Empty;
+            _sinhVienNguyenBan = null;
+            _dangSua = false;
+            DatCheDoNhap(true);
+            if (btnSua != null)
+            {
+                btnSua.Text = "Sửa";
+            }
             txtHoTen.Clear();
             dtpNgaySinh.Value = DateTime.Today;
             radNam.Checked = true;
@@ -393,12 +444,178 @@ namespace BCWF.Forms
             #endregion
         }
 
+        private void txtMSSV_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            char c = e.KeyChar;
+            string hienTai = txtMSSV.Text;
+            int viTri = txtMSSV.SelectionStart;
+
+            // Chữ S chỉ được ở vị trí đầu.
+            if (c == 's' || c == 'S')
+            {
+                if (viTri == 0 && (hienTai.Length == 0 || txtMSSV.SelectionLength == hienTai.Length))
+                {
+                    e.KeyChar = 'S';
+                    return;
+                }
+                e.Handled = true;
+                return;
+            }
+
+            // Chữ V chỉ được ngay sau S.
+            if (c == 'v' || c == 'V')
+            {
+                if (viTri == 1 && hienTai.Length >= 1 && (hienTai[0] == 'S') &&
+                    (hienTai.Length == 1 || txtMSSV.SelectionLength > 0))
+                {
+                    e.KeyChar = 'V';
+                    return;
+                }
+                e.Handled = true;
+                return;
+            }
+
+            // Số chỉ được nhập sau khi đã có "SV".
+            if (c >= '0' && c <= '9')
+            {
+                bool coTienToSV = hienTai.StartsWith("SV", StringComparison.OrdinalIgnoreCase) ||
+                                 (viTri >= 2 && hienTai.Length >= 2 && hienTai[0] == 'S' && hienTai[1] == 'V');
+                // Nếu đang thay thế toàn bộ, cho phép bắt đầu bằng SV? số vẫn không được đầu.
+                if (!coTienToSV)
+                {
+                    MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    e.Handled = true;
+                    return;
+                }
+                return;
+            }
+
+            // Chặn mọi ký tự khác, kể cả chữ có dấu.
+            e.Handled = true;
+        }
+
+        private bool _dangChuanHoaMSSV;
+        private bool _dangHienLoiMSSV;
+
+        private void txtMSSV_TextChanged(object? sender, EventArgs e)
+        {
+            if (_dangChuanHoaMSSV)
+            {
+                return;
+            }
+
+            string goc = txtMSSV.Text;
+            string sach = new string(goc.Where(ch => (ch >= '0' && ch <= '9') ||
+                                                    ch == 'S' || ch == 'V' ||
+                                                    ch == 's' || ch == 'v').ToArray())
+                .ToUpperInvariant();
+
+            // Nếu sau chuẩn hoá MSSV bắt đầu bằng số -> báo lỗi và xóa.
+            if (sach.Length > 0 && sach[0] >= '0' && sach[0] <= '9')
+            {
+                if (!_dangHienLoiMSSV)
+                {
+                    _dangHienLoiMSSV = true;
+                    MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _dangHienLoiMSSV = false;
+                }
+
+                _dangChuanHoaMSSV = true;
+                txtMSSV.Clear();
+                _dangChuanHoaMSSV = false;
+                return;
+            }
+
+            if (!string.Equals(sach, goc, StringComparison.Ordinal))
+            {
+                int viTri = txtMSSV.SelectionStart;
+                _dangChuanHoaMSSV = true;
+                txtMSSV.Text = sach;
+                txtMSSV.SelectionStart = Math.Min(viTri, sach.Length);
+                _dangChuanHoaMSSV = false;
+            }
+        }
+
+        private void txtHoTen_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            // Chặn số; chỉ cho chữ, khoảng trắng và một số ký tự tên.
+            if (char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            if (!(char.IsLetter(e.KeyChar) || char.IsWhiteSpace(e.KeyChar) || e.KeyChar == '\'' || e.KeyChar == '-'))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txtHoTen_TextChanged(object? sender, EventArgs e)
+        {
+            // Loại bỏ số nếu bị dán vào.
+            string goc = txtHoTen.Text;
+            string sach = new string(goc.Where(ch => !char.IsDigit(ch)).ToArray());
+            if (!string.Equals(sach, goc, StringComparison.Ordinal))
+            {
+                int viTri = txtHoTen.SelectionStart;
+                txtHoTen.Text = sach;
+                txtHoTen.SelectionStart = Math.Min(viTri, sach.Length);
+            }
+        }
+
+        private void DatCheDoNhap(bool choPhep)
+        {
+            txtMSSV.ReadOnly = !choPhep;
+            txtHoTen.ReadOnly = !choPhep;
+            dtpNgaySinh.Enabled = choPhep;
+            radNam.Enabled = choPhep;
+            radNu.Enabled = choPhep;
+            cboLop.Enabled = choPhep;
+            btnChonAnh.Enabled = choPhep;
+        }
+
+        private bool DuLieuDaThayDoi()
+        {
+            return !GiongNguyenBan();
+        }
+
+        private bool GiongNguyenBan()
+        {
+            if (_sinhVienNguyenBan == null)
+            {
+                return false;
+            }
+
+            string hoTen = txtHoTen.Text.Trim();
+            string gioiTinh = radNu.Checked ? "Nữ" : "Nam";
+            DateTime ngaySinh = dtpNgaySinh.Value.Date;
+            string maLop = cboLop.SelectedItem is Lop lop ? lop.MaLop : string.Empty;
+
+            return string.Equals(txtMSSV.Text.Trim(), _sinhVienNguyenBan.MSSV, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(hoTen, _sinhVienNguyenBan.HoTen, StringComparison.OrdinalIgnoreCase)
+                && ngaySinh == _sinhVienNguyenBan.NgaySinh
+                && string.Equals(gioiTinh, _sinhVienNguyenBan.GioiTinh, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(maLop, _sinhVienNguyenBan.MaLop, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(_anhHienTai, _sinhVienNguyenBan.Anh, StringComparison.OrdinalIgnoreCase);
+        }
+
         private bool KiemTraDuLieu(out SinhVien? sinhVien)
         {
             #region Kiểm tra dữ liệu
             sinhVien = null;
 
-            string mssv = txtMSSV.Text.Trim();
+            string mssv = txtMSSV.Text.Trim().ToUpperInvariant();
             string hoTen = txtHoTen.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(mssv))
@@ -408,10 +625,37 @@ namespace BCWF.Forms
                 return false;
             }
 
+            if (!SinhVien.IsValidMSSV(mssv))
+            {
+                MessageBox.Show("MSSV phải có dạng SV theo sau là số (ví dụ SV01, SV001, SV10001), không dấu.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtMSSV.Focus();
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(hoTen))
             {
                 MessageBox.Show("Họ tên không được để trống.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtHoTen.Focus();
+                return false;
+            }
+
+            if (hoTen.Any(char.IsDigit))
+            {
+                MessageBox.Show("Họ tên không được chứa số.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtHoTen.Focus();
+                return false;
+            }
+
+            if (!hoTen.Any(char.IsLetter))
+            {
+                MessageBox.Show("Họ tên phải chứa chữ cái.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtHoTen.Focus();
+                return false;
+            }
+
+            if (!radNam.Checked && !radNu.Checked)
+            {
+                MessageBox.Show("Hãy chọn giới tính.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
