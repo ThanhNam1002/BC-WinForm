@@ -38,13 +38,19 @@ namespace BCWF
             baoCaoMenu = new ToolStripMenuItem();
             canhBaoHocVuMenuItem = new ToolStripMenuItem();
             panelNoiDung = new Panel();
+            cửaSổToolStripMenuItem = new ToolStripMenuItem();
+            xepChongToolStripMenuItem = new ToolStripMenuItem();
+            xepNgangToolStripMenuItem = new ToolStripMenuItem();
+            xepDocStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            dongTatCaToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { heThongMenu, quanLyMenu, baoCaoMenu });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { heThongMenu, quanLyMenu, baoCaoMenu, cửaSổToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1100, 28);
@@ -62,7 +68,7 @@ namespace BCWF
             // 
             thoatMenuItem.Name = "thoatMenuItem";
             thoatMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
-            thoatMenuItem.Size = new Size(183, 26);
+            thoatMenuItem.Size = new Size(224, 26);
             thoatMenuItem.Text = "Thoát";
             thoatMenuItem.Click += thoatMenuItem_Click;
             // 
@@ -116,6 +122,42 @@ namespace BCWF
             panelNoiDung.Size = new Size(1100, 622);
             panelNoiDung.TabIndex = 1;
             // 
+            // cửaSổToolStripMenuItem
+            // 
+            cửaSổToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { xepChongToolStripMenuItem, xepNgangToolStripMenuItem, xepDocStripMenuItem, toolStripSeparator1, dongTatCaToolStripMenuItem });
+            cửaSổToolStripMenuItem.Name = "cửaSổToolStripMenuItem";
+            cửaSổToolStripMenuItem.Size = new Size(70, 24);
+            cửaSổToolStripMenuItem.Text = "Cửa Sổ";
+            // 
+            // xepChongToolStripMenuItem
+            // 
+            xepChongToolStripMenuItem.Name = "xepChongToolStripMenuItem";
+            xepChongToolStripMenuItem.Size = new Size(175, 26);
+            xepChongToolStripMenuItem.Text = "Xếp Chồng";
+            // 
+            // xepNgangToolStripMenuItem
+            // 
+            xepNgangToolStripMenuItem.Name = "xepNgangToolStripMenuItem";
+            xepNgangToolStripMenuItem.Size = new Size(175, 26);
+            xepNgangToolStripMenuItem.Text = "Xếp Ngang";
+            // 
+            // xepDocStripMenuItem
+            // 
+            xepDocStripMenuItem.Name = "xepDocStripMenuItem";
+            xepDocStripMenuItem.Size = new Size(175, 26);
+            xepDocStripMenuItem.Text = "Xếp Dọc";
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(172, 6);
+            // 
+            // dongTatCaToolStripMenuItem
+            // 
+            dongTatCaToolStripMenuItem.Name = "dongTatCaToolStripMenuItem";
+            dongTatCaToolStripMenuItem.Size = new Size(175, 26);
+            dongTatCaToolStripMenuItem.Text = "Đóng Tất Cả";
+            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -147,5 +189,11 @@ namespace BCWF
         private ToolStripMenuItem baoCaoMenu;
         private ToolStripMenuItem canhBaoHocVuMenuItem;
         private Panel panelNoiDung;
+        private ToolStripMenuItem cửaSổToolStripMenuItem;
+        private ToolStripMenuItem xepChongToolStripMenuItem;
+        private ToolStripMenuItem xepNgangToolStripMenuItem;
+        private ToolStripMenuItem xepDocStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem dongTatCaToolStripMenuItem;
     }
 }

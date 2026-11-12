@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace BCWF.Models
 {
@@ -20,6 +21,16 @@ namespace BCWF.Models
 
         /// <summary>Tên tệp ảnh thẻ (ví dụ SV001.png), để trống nếu chưa có ảnh.</summary>
         public string Anh { get; set; } = string.Empty;
+
+        public static bool IsValidMSSV(string? mssv)
+        {
+            if (string.IsNullOrWhiteSpace(mssv))
+            {
+                return false;
+            }
+
+            return Regex.IsMatch(mssv.Trim(), @"^SV[0-9]+$", RegexOptions.IgnoreCase);
+        }
 
         public override string ToString() => $"{MSSV} - {HoTen}";
 
@@ -44,6 +55,12 @@ namespace BCWF.Models
 
             string[] cot = dong.Split(';');
             if (cot.Length < 5 || string.IsNullOrWhiteSpace(cot[0]))
+            {
+                return false;
+            }
+
+            // Bỏ qua các dòng tiêu đề / dữ liệu không hợp lệ (MSSV phải đúng định dạng SV...).
+            if (!IsValidMSSV(cot[0].Trim()))
             {
                 return false;
             }
