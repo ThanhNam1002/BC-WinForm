@@ -1,5 +1,34 @@
 MaLop;TenLop;MaKhoa
 CNTT01;CNTT Khoá 1;CNTT
 CNTT02;CNTT Khoá 2;CNTT
+CNTT03;CNTT Khoá 3;CNTT
 KT01;Kinh tế Khoá 1;KT
+KT02;Kinh tế Khoá 2;KT
+KT03;Kinh tế Khoá 3;KT
 DT01;Điện - Điện tử Khoá 1;DT
+DT02;Điện - Điện tử Khoá 2;DT
+DT03;Điện - Điện tử Khoá 3;DT
+QTKT01;Quản trị - Kinh tế quốc tế Khoá 1;QTKT
+QTKT02;Quản trị - Kinh tế quốc tế Khoá 2;QTKT
+QTKT03;Quản trị - Kinh tế quốc tế Khoá 3;QTKT
+TCKT01;Tài chính - Kế toán Khoá 1;TCKT
+TCKT02;Tài chính - Kế toán Khoá 2;TCKT
+TCKT03;Tài chính - Kế toán Khoá 3;TCKT
+CKDT01;Cơ điện - Điện tử Khoá 1;CKDT
+CKDT02;Cơ điện - Điện tử Khoá 2;CKDT
+CKDT03;Cơ điện - Điện tử Khoá 3;CKDT
+CNTP01;Công nghệ thực phẩm Khoá 1;CNTP
+CNTP02;Công nghệ thực phẩm Khoá 2;CNTP
+CNTP03;Công nghệ thực phẩm Khoá 3;CNTP
+DUOC01;Dược Khoá 1;DUOC
+DUOC02;Dược Khoá 2;DUOC
+DUOC03;Dược Khoá 3;DUOC
+KTCT01;Kỹ thuật công trình Khoá 1;KTCT
+KTCT02;Kỹ thuật công trình Khoá 2;KTCT
+KTCT03;Kỹ thuật công trình Khoá 3;KTCT
+NGA01;Ngôn ngữ Anh Khoá 1;NGA
+NGA02;Ngôn ngữ Anh Khoá 2;NGA
+NGA03;Ngôn ngữ Anh Khoá 3;NGA
+DOVU01;Đông phương học Khoá 1;DOVU
+DOVU02;Đông phương học Khoá 2;DOVU
+DOVU03;Đông phương học Khoá 3;DOVU
