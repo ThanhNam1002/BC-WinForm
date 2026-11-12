@@ -1,65 +1,222 @@
 using BCWF.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace BCWF.Services
 {
     /// <summary>
     /// SV1 - Sinh viên &amp; lớp.
-    /// Các hàm dưới đây là khung nghiệp vụ, cài đặt chi tiết sẽ bổ sung sau.
-    /// Dữ liệu dùng chung lấy từ <see cref="DataStore.Instance"/>.
     /// </summary>
     public class SinhVienService
     {
         private readonly DataStore _store = DataStore.Instance;
 
-        /// <summary>Lấy danh sách sinh viên thuộc một khoa (dùng khi chọn nút Khoa trên TreeView).</summary>
         public List<SinhVien> LayTheoKhoa(string maKhoa)
         {
-            throw new NotImplementedException("TODO (SV1): lọc sinh viên theo khoa.");
+            if (string.IsNullOrWhiteSpace(maKhoa))
+            {
+                return _store.SinhViens.ToList();
+            }
+
+            var maLops = _store.Lops
+                .Where(l => string.Equals(l.MaKhoa, maKhoa, StringComparison.OrdinalIgnoreCase))
+                .Select(l => l.MaLop)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return _store.SinhViens
+                .Where(sv => maLops.Contains(sv.MaLop))
+                .ToList();
         }
 
-        /// <summary>Lấy danh sách sinh viên thuộc một lớp (dùng khi chọn nút Lớp trên TreeView).</summary>
         public List<SinhVien> LayTheoMaLop(string maLop)
         {
-            throw new NotImplementedException("TODO (SV1): lọc sinh viên theo lớp.");
+            if (string.IsNullOrWhiteSpace(maLop))
+            {
+                return new List<SinhVien>();
+            }
+
+            return _store.SinhViens
+                .Where(sv => string.Equals(sv.MaLop, maLop, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
 
-        /// <summary>Kiểm tra MSSV đã tồn tại hay chưa (bỏ qua chính sinh viên đang sửa).</summary>
         public bool KiemTraTrungMSSV(string mssv, string? mssvDangSua = null)
         {
-            throw new NotImplementedException("TODO (SV1): chặn trùng MSSV.");
+            if (string.IsNullOrWhiteSpace(mssv))
+            {
+                return false;
+            }
+
+            return _store.SinhViens.Any(sv =>
+                string.Equals(sv.MSSV, mssv, StringComparison.OrdinalIgnoreCase) &&
+                (string.IsNullOrWhiteSpace(mssvDangSua) ||
+                 !string.Equals(sv.MSSV, mssvDangSua, StringComparison.OrdinalIgnoreCase)));
         }
 
-        /// <summary>Thêm sinh viên mới (kiểm tra trùng MSSV, kiểm tra dữ liệu bắt buộc).</summary>
         public void Them(SinhVien sinhVien)
         {
-            throw new NotImplementedException("TODO (SV1): thêm sinh viên.");
+            if (sinhVien == null)
+            {
+                throw new ArgumentNullException(nameof(sinhVien));
+            }
+
+            if (string.IsNullOrWhiteSpace(sinhVien.MSSV))
+            {
+                throw new ArgumentException("MSSV không được để trống.", nameof(sinhVien));
+            }
+
+            if (string.IsNullOrWhiteSpace(sinhVien.HoTen))
+            {
+                throw new ArgumentException("Họ tên không được để trống.", nameof(sinhVien));
+            }
+
+            if (string.IsNullOrWhiteSpace(sinhVien.MaLop))
+            {
+                throw new ArgumentException("Mã lớp không được để trống.", nameof(sinhVien));
+            }
+
+            if (KiemTraTrungMSSV(sinhVien.MSSV))
+            {
+                throw new InvalidOperationException($"MSSV '{sinhVien.MSSV}' đã tồn tại.");
+            }
+
+            _store.SinhViens.Add(sinhVien);
+            _store.LuuSinhVien();
         }
 
-        /// <summary>Cập nhật thông tin sinh viên đang chọn.</summary>
         public void CapNhat(SinhVien sinhVien)
         {
-            throw new NotImplementedException("TODO (SV1): sửa sinh viên.");
+            if (sinhVien == null)
+            {
+                throw new ArgumentNullException(nameof(sinhVien));
+            }
+
+            int viTri = _store.SinhViens.FindIndex(sv =>
+                string.Equals(sv.MSSV, sinhVien.MSSV, StringComparison.OrdinalIgnoreCase));
+
+            if (viTri < 0)
+            {
+                throw new InvalidOperationException($"Không tìm thấy sinh viên có MSSV '{sinhVien.MSSV}'.");
+            }
+
+            _store.SinhViens[viTri] = sinhVien;
+            _store.LuuSinhVien();
         }
 
-        /// <summary>Xóa sinh viên theo MSSV (kèm đăng ký học phần liên quan).</summary>
         public void Xoa(string mssv)
         {
-            throw new NotImplementedException("TODO (SV1): xóa sinh viên.");
+            if (string.IsNullOrWhiteSpace(mssv))
+            {
+                return;
+            }
+
+            _store.SinhViens.RemoveAll(sv =>
+                string.Equals(sv.MSSV, mssv, StringComparison.OrdinalIgnoreCase));
+
+            _store.DangKys.RemoveAll(dk =>
+                string.Equals(dk.MSSV, mssv, StringComparison.OrdinalIgnoreCase));
+
+            _store.LuuSinhVien();
+            _store.LuuDangKy();
         }
 
-        /// <summary>Nhập danh sách sinh viên từ tệp CSV.</summary>
-        /// <returns>Số sinh viên nhập thành công.</returns>
         public int NhapTuCsv(string duongDanCsv)
         {
-            throw new NotImplementedException("TODO (SV1): đọc CSV và thêm sinh viên.");
+            if (string.IsNullOrWhiteSpace(duongDanCsv) || !File.Exists(duongDanCsv))
+            {
+                return 0;
+            }
+
+            var cacDong = FileHelpers.DocCsv(duongDanCsv, false);
+            int batDau = 0;
+            if (cacDong.Count > 0 && cacDong[0].Length > 0 &&
+                string.Equals(cacDong[0][0].Trim(), "MSSV", StringComparison.OrdinalIgnoreCase))
+            {
+                batDau = 1;
+            }
+
+            int soThanhCong = 0;
+
+            for (int i = batDau; i < cacDong.Count; i++)
+            {
+                string[] cot = cacDong[i];
+                if (cot.Length < 5)
+                {
+                    continue;
+                }
+
+                string mssv = cot[0].Trim();
+                string hoTen = cot[1].Trim();
+                string maLop = cot[4].Trim();
+
+                if (string.IsNullOrWhiteSpace(mssv) || string.IsNullOrWhiteSpace(hoTen) || string.IsNullOrWhiteSpace(maLop))
+                {
+                    continue;
+                }
+
+                if (KiemTraTrungMSSV(mssv))
+                {
+                    continue;
+                }
+
+                DateTime ngaySinh = DateTime.MinValue;
+                if (!string.IsNullOrWhiteSpace(cot[2]))
+                {
+                    DateTime.TryParseExact(cot[2].Trim(), SinhVien.DinhDangNgay,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None, out ngaySinh);
+                }
+
+                string anh = cot.Length > 5 ? cot[5].Trim() : string.Empty;
+
+                var sinhVien = new SinhVien
+                {
+                    MSSV = mssv,
+                    HoTen = hoTen,
+                    NgaySinh = ngaySinh,
+                    GioiTinh = cot[3].Trim(),
+                    MaLop = maLop,
+                    Anh = anh
+                };
+
+                _store.SinhViens.Add(sinhVien);
+                soThanhCong++;
+            }
+
+            if (soThanhCong > 0)
+            {
+                _store.LuuSinhVien();
+            }
+
+            return soThanhCong;
         }
 
-        /// <summary>Chép ảnh thẻ vào thư mục Data/Images và trả về tên tệp đã lưu.</summary>
         public string LuuAnh(string mssv, string duongDanAnhNguon)
         {
-            throw new NotImplementedException("TODO (SV1): sao chép ảnh thẻ vào Data/Images.");
+            if (string.IsNullOrWhiteSpace(duongDanAnhNguon) || !File.Exists(duongDanAnhNguon))
+            {
+                throw new FileNotFoundException("Không tìm thấy tệp ảnh.", duongDanAnhNguon);
+            }
+
+            Directory.CreateDirectory(_store.ImagesFolder);
+
+            string ma = string.IsNullOrWhiteSpace(mssv)
+                ? Guid.NewGuid().ToString("N")
+                : FileHelpers.ChuanHoaTenTep(mssv);
+
+            string phanMoRong = Path.GetExtension(duongDanAnhNguon);
+            if (string.IsNullOrWhiteSpace(phanMoRong))
+            {
+                phanMoRong = ".png";
+            }
+
+            string tenAnh = ma + phanMoRong;
+            string dich = Path.Combine(_store.ImagesFolder, tenAnh);
+
+            File.Copy(duongDanAnhNguon, dich, true);
+            return tenAnh;
         }
     }
 }

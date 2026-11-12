@@ -10,9 +10,40 @@ namespace BCWF.Forms
 {
     public partial class FrmDangNhap : Form
     {
+        public static string MatKhauHienTai = "12345";
         public FrmDangNhap()
         {
             InitializeComponent();
+            lnkDoiMatKhau.Click += lnkDoiMatKhau_Click;
+            btnHuy.Click += btnHuy_Click;
+            MakePictureBoxCircular(pictureBox1);
+            pictureBox1.SizeChanged += (s, e) => MakePictureBoxCircular(pictureBox1);
+            try
+            {
+                string imgPath = @"C:\Users\ASUS\Downloads\ThanhNam1002\BC-WinForm\BCWF\anh.png";
+                if (System.IO.File.Exists(imgPath))
+                {
+                    using (var stream = new System.IO.FileStream(imgPath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                    {
+                        pictureBox1.Image = Image.FromStream(stream);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tải hình ảnh: " + ex.Message, "Lỗi",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void MakePictureBoxCircular(PictureBox pic)
+        {
+            System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+            int size = Math.Min(pic.Width, pic.Height);
+            int x = (pic.Width - size) / 2;
+            int y = (pic.Height - size) / 2;
+            path.AddEllipse(x, y, size, size);
+            pic.Region = new Region(path);
         }
 
         private void btnDangNhap_Click(object sender, EventArgs e)
@@ -22,25 +53,38 @@ namespace BCWF.Forms
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.",
-                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.","Thông báo",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // TODO: kiểm tra tài khoản trong DataStore.Instance.Users (dữ liệu users.txt)
-            // thay cho tài khoản demo bên dưới.
-            if (username == "admin" && password == "12345")
+            //Kiểm tra đăng nhâp
+            if (username == "admin" && password == MatKhauHienTai)
             {
                 MessageBox.Show("Đăng nhập thành công", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             else
             {
-                MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.",
-                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.","Thông báo",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void lnkDoiMatKhau_Click(object? sender, EventArgs e)
+        {
+            using (FrmDoiMatKhau frm = new FrmDoiMatKhau())
+            {
+                frm.ShowDialog(this);
+            }
+            txtPassword.Focus();
+        }
+
+        private void btnHuy_Click(object? sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

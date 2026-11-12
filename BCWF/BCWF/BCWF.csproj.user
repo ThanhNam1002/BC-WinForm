@@ -10,6 +10,9 @@
     <Compile Update="Forms\FrmDangNhap.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\FrmDoiMatKhau.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forms\FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
