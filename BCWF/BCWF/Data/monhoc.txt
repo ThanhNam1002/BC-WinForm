@@ -1,7 +1,20 @@
 MaMon;TenMon;SoTC;MaMonTienQuyet
 CT101;Lập trình cơ bản;3;
 CT102;Kỹ thuật lập trình;3;CT101
-CT201;Cấu trúc dữ liệu;4;CT102
+CT201;Cấu trúc dữ liệu và giải thuật;4;CT102
 CT202;Cơ sở dữ liệu;3;CT101
 CT203;Lập trình hướng đối tượng;3;CT102
 KT101;Kinh tế vi mô;3;
+KT201;Nguyên lý kế toán;3;KT101
+DT101;Mạch điện tử;3;
+DT102;Kỹ thuật số;3;DT101
+DT201;Vi xử lý và vi điều khiển;4;DT102
+QT101;Quản trị học đại cương;3;
+QT102;Marketing căn bản;3;QT101
+TC101;Tài chính tiền tệ;3;KT101
+CK101;Vẽ kỹ thuật cơ khí;2;
+CK102;Chi tiết máy;3;CK101
+TP101;Hóa sinh thực phẩm;3;
+DU101;Hóa dược đại cương;3;
+NX101;Sức bền vật liệu;3;
+NN101;Ngữ pháp tiếng Anh cơ bản;3;

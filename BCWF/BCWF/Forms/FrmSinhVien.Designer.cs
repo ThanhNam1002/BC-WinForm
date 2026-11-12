@@ -250,7 +250,7 @@ namespace BCWF.Forms
             picAnh.Location = new Point(619, 12);
             picAnh.Name = "picAnh";
             picAnh.Size = new Size(100, 119);
-            picAnh.SizeMode = PictureBoxSizeMode.Zoom;
+            picAnh.SizeMode = PictureBoxSizeMode.StretchImage;
             picAnh.TabIndex = 11;
             picAnh.TabStop = false;
             // 
