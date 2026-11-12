@@ -1,0 +1,4 @@
+MaKhoa;TenKhoa
+CNTT;Công nghệ thông tin
+KT;Kinh tế
+DT;Điện - Điện tử

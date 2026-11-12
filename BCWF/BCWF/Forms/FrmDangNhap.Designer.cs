@@ -28,12 +28,125 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "FrmDangNhap";
+            lblTitle = new Label();
+            lblUsername = new Label();
+            txtUsername = new TextBox();
+            lblPassword = new Label();
+            txtPassword = new TextBox();
+            btnDangNhap = new Button();
+            btnHuy = new Button();
+            lnkDangKy = new LinkLabel();
+            SuspendLayout();
+            // 
+            // lblTitle
+            // 
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblTitle.Location = new Point(137, 40);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(161, 32);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "DANG NHAP";
+            // 
+            // lblUsername
+            // 
+            lblUsername.AutoSize = true;
+            lblUsername.Location = new Point(46, 120);
+            lblUsername.Name = "lblUsername";
+            lblUsername.Size = new Size(110, 20);
+            lblUsername.TabIndex = 1;
+            lblUsername.Text = "Ten dang nhap:";
+            // 
+            // txtUsername
+            // 
+            txtUsername.Location = new Point(183, 116);
+            txtUsername.Margin = new Padding(3, 4, 3, 4);
+            txtUsername.Name = "txtUsername";
+            txtUsername.Size = new Size(228, 27);
+            txtUsername.TabIndex = 2;
+            // 
+            // lblPassword
+            // 
+            lblPassword.AutoSize = true;
+            lblPassword.Location = new Point(46, 173);
+            lblPassword.Name = "lblPassword";
+            lblPassword.Size = new Size(73, 20);
+            lblPassword.TabIndex = 3;
+            lblPassword.Text = "Mat khau:";
+            // 
+            // txtPassword
+            // 
+            txtPassword.Location = new Point(183, 169);
+            txtPassword.Margin = new Padding(3, 4, 3, 4);
+            txtPassword.Name = "txtPassword";
+            txtPassword.PasswordChar = '*';
+            txtPassword.Size = new Size(228, 27);
+            txtPassword.TabIndex = 4;
+            // 
+            // btnDangNhap
+            // 
+            btnDangNhap.Location = new Point(183, 233);
+            btnDangNhap.Margin = new Padding(3, 4, 3, 4);
+            btnDangNhap.Name = "btnDangNhap";
+            btnDangNhap.Size = new Size(109, 40);
+            btnDangNhap.TabIndex = 5;
+            btnDangNhap.Text = "Dang nhap";
+            btnDangNhap.UseVisualStyleBackColor = true;
+            btnDangNhap.Click += btnDangNhap_Click;
+            // 
+            // btnHuy
+            // 
+            btnHuy.Location = new Point(303, 233);
+            btnHuy.Margin = new Padding(3, 4, 3, 4);
+            btnHuy.Name = "btnHuy";
+            btnHuy.Size = new Size(109, 40);
+            btnHuy.TabIndex = 6;
+            btnHuy.Text = "Huy";
+            btnHuy.UseVisualStyleBackColor = true;
+            // 
+            // lnkDangKy
+            // 
+            lnkDangKy.AutoSize = true;
+            lnkDangKy.Location = new Point(183, 293);
+            lnkDangKy.Name = "lnkDangKy";
+            lnkDangKy.Size = new Size(192, 20);
+            lnkDangKy.TabIndex = 7;
+            lnkDangKy.TabStop = true;
+            lnkDangKy.Text = "Chua co tai khoan? Dang ky";
+            // 
+            // FrmDangNhap
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(548, 405);
+            Controls.Add(lnkDangKy);
+            Controls.Add(btnHuy);
+            Controls.Add(btnDangNhap);
+            Controls.Add(txtPassword);
+            Controls.Add(lblPassword);
+            Controls.Add(txtUsername);
+            Controls.Add(lblUsername);
+            Controls.Add(lblTitle);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(3, 4, 3, 4);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "FrmDangNhap";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Dang Nhap";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
+
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblUsername;
+        private System.Windows.Forms.TextBox txtUsername;
+        private System.Windows.Forms.Label lblPassword;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Button btnDangNhap;
+        private System.Windows.Forms.Button btnHuy;
+        private System.Windows.Forms.LinkLabel lnkDangKy;
     }
 }

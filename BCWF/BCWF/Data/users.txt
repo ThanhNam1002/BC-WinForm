@@ -1,0 +1,3 @@
+TenDangNhap;MatKhau;HoTen;VaiTro
+admin;12345;Quản trị viên;Admin
+giaoVu;12345;Giáo vụ khoa;GiaoVu
