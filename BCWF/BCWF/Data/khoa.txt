@@ -2,3 +2,11 @@ MaKhoa;TenKhoa
 CNTT;Công nghệ thông tin
 KT;Kinh tế
 DT;Điện - Điện tử
+QTKT;Quản trị - Kinh tế quốc tế
+TCKT;Tài chính - Kế toán
+CNTP;Khoa học và Công nghệ thực phẩm
+DUOC;Dược
+KTCT;Kỹ thuật công trình
+NGA;Ngôn ngữ Anh
+DOVU;Đông phương học
+SAD;Sau đại học
