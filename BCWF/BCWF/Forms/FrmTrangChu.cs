@@ -19,52 +19,57 @@ namespace BCWF.Forms
 
         private Label lblChao = null!;
         private Label lblHocKy = null!;
-        private Label lblThongKe = null!;
+        private TableLayoutPanel tlpThongKe = null!;
         private ListBox lstNhacViec = null!;
         private Label lblNhacViecTrong = null!;
 
         public FrmTrangChu()
         {
             Text = "Trang chủ";
-            StartPosition = FormStartPosition.Manual;
-            BackColor = SystemColors.Control;
+            WindowState = FormWindowState.Maximized;
+            BackColor = Color.White;
             AutoScroll = true;
-            Padding = new Padding(12);
+            Padding = new Padding(16);
 
-            var root = new FlowLayoutPanel
+            var root = new TableLayoutPanel
             {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.TopDown,
-                WrapContents = false,
-                AutoScroll = true
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                ColumnCount = 1,
+                Padding = new Padding(0)
             };
+            root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-            // ---- Tiêu đề ----
+            // ---- Header ----
+            var pnlHeader = new Panel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(0, 0, 0, 8) };
             var lblTieuDe = new Label
             {
                 Text = "HỆ THỐNG QUẢN LÝ ĐĂNG KÝ HỌC PHẦN & ĐIỂM",
-                Font = new Font("Segoe UI", 15F, FontStyle.Bold),
+                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(30, 55, 120),
                 AutoSize = true,
-                Margin = new Padding(0, 0, 0, 4)
+                Dock = DockStyle.Top
             };
-            root.Controls.Add(lblTieuDe);
-
             lblChao = new Label
             {
                 AutoSize = true,
                 Font = new Font("Segoe UI", 10.5F),
-                Margin = new Padding(0, 0, 0, 10)
+                ForeColor = Color.DimGray,
+                Dock = DockStyle.Top,
+                Padding = new Padding(0, 4, 0, 0)
             };
-            root.Controls.Add(lblChao);
+            pnlHeader.Controls.Add(lblChao);
+            pnlHeader.Controls.Add(lblTieuDe);
+            root.Controls.Add(pnlHeader, 0, 0);
 
             // ---- Học kỳ & cấu hình ----
             var grpHocKy = new GroupBox
             {
-                Text = "Thông tin học kỳ & cấu hình",
-                Width = 900,
+                Text = "Học kỳ & cấu hình",
+                Dock = DockStyle.Top,
                 AutoSize = true,
-                Padding = new Padding(10)
+                Padding = new Padding(12, 8, 12, 8),
+                Margin = new Padding(0, 0, 0, 8)
             };
             lblHocKy = new Label
             {
@@ -72,36 +77,49 @@ namespace BCWF.Forms
                 Font = new Font("Segoe UI", 10F)
             };
             grpHocKy.Controls.Add(lblHocKy);
-            root.Controls.Add(grpHocKy);
+            root.Controls.Add(grpHocKy, 0, 1);
 
-            // ---- Thống kê ----
+            // ---- Thống kê (lưới 2 cột) ----
             var grpThongKe = new GroupBox
             {
                 Text = "Thống kê dữ liệu",
-                Width = 900,
+                Dock = DockStyle.Top,
                 AutoSize = true,
-                Padding = new Padding(10)
+                Padding = new Padding(12, 8, 12, 8),
+                Margin = new Padding(0, 0, 0, 8)
             };
-            lblThongKe = new Label
+            tlpThongKe = new TableLayoutPanel
             {
+                Dock = DockStyle.Top,
                 AutoSize = true,
-                Font = new Font("Segoe UI", 10F)
+                ColumnCount = 4,
+                RowCount = 2
             };
-            grpThongKe.Controls.Add(lblThongKe);
-            root.Controls.Add(grpThongKe);
+            for (int i = 0; i < 2; i++)
+            {
+                tlpThongKe.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                tlpThongKe.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            }
+            grpThongKe.Controls.Add(tlpThongKe);
+            root.Controls.Add(grpThongKe, 0, 2);
 
             // ---- Nhắc việc ----
             var grpNhacViec = new GroupBox
             {
                 Text = "Nhắc việc / Cảnh báo",
-                Width = 900,
-                Height = 180,
-                Padding = new Padding(10)
+                Dock = DockStyle.Top,
+                Height = 170,
+                Padding = new Padding(12, 8, 12, 8),
+                Margin = new Padding(0, 0, 0, 8)
             };
             lstNhacViec = new ListBox
             {
                 Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI", 10F)
+                Font = new Font("Segoe UI", 10F),
+                IntegralHeight = false
             };
             lblNhacViecTrong = new Label
             {
@@ -114,15 +132,16 @@ namespace BCWF.Forms
             };
             grpNhacViec.Controls.Add(lstNhacViec);
             grpNhacViec.Controls.Add(lblNhacViecTrong);
-            root.Controls.Add(grpNhacViec);
+            root.Controls.Add(grpNhacViec, 0, 3);
 
             // ---- Lối tắt ----
             var grpLoi = new GroupBox
             {
                 Text = "Lối tắt chức năng",
-                Width = 900,
+                Dock = DockStyle.Top,
                 AutoSize = true,
-                Padding = new Padding(10)
+                Padding = new Padding(12, 8, 12, 8),
+                Margin = new Padding(0, 0, 0, 8)
             };
             var flowLoi = new FlowLayoutPanel
             {
@@ -131,29 +150,29 @@ namespace BCWF.Forms
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true
             };
-            ThemNutLopTat(flowLoi, "SV1 - Sinh viên & Lớp", () => MoForm<FrmSinhVien>());
-            ThemNutLopTat(flowLoi, "SV2 - Đăng ký học phần", () => MoForm<FrmDangKy>());
-            ThemNutLopTat(flowLoi, "SV3 - Nhập điểm & Bảng điểm", () => MoForm<FrmNhapDiem>());
-            ThemNutLopTat(flowLoi, "Cảnh báo học vụ", () => MoForm<FrmCanhBaoHocVu>());
-            ThemNutLopTat(flowLoi, "Đổi mật khẩu", MoDoiMatKhau);
-            ThemNutLopTat(flowLoi, "Đóng tất cả cửa sổ", DongTatCa);
+            ThemNut(flowLoi, "SV1 - Sinh viên & Lớp", () => MoForm<FrmSinhVien>());
+            ThemNut(flowLoi, "SV2 - Đăng ký học phần", () => MoForm<FrmDangKy>());
+            ThemNut(flowLoi, "SV3 - Nhập điểm & Bảng điểm", () => MoForm<FrmNhapDiem>());
+            ThemNut(flowLoi, "Cảnh báo học vụ", () => MoForm<FrmCanhBaoHocVu>());
+            ThemNut(flowLoi, "Đổi mật khẩu", MoDoiMatKhau);
+            ThemNut(flowLoi, "Đóng tất cả cửa sổ", DongTatCa);
             grpLoi.Controls.Add(flowLoi);
-            root.Controls.Add(grpLoi);
+            root.Controls.Add(grpLoi, 0, 4);
 
             Controls.Add(root);
 
             Load += (s, e) => CapNhat();
         }
 
-        private void ThemNutLopTat(Control parent, string text, Action hanhDong)
+        private void ThemNut(Control parent, string text, Action hanhDong)
         {
             var btn = new Button
             {
                 Text = text,
                 AutoSize = true,
-                Padding = new Padding(10, 6, 10, 6),
+                Padding = new Padding(12, 6, 12, 6),
                 Margin = new Padding(4),
-                FlatStyle = FlatStyle.Standard
+                FlatStyle = FlatStyle.System
             };
             btn.Click += (s, e) => hanhDong();
             parent.Controls.Add(btn);
@@ -197,10 +216,7 @@ namespace BCWF.Forms
             lblChao.Text = $"Xin chào, {tenHienThi} ({user?.TenDangNhap})  •  Vai trò: {vaiTro}  •  {DateTime.Now:dddd, dd/MM/yyyy HH:mm}";
 
             lblHocKy.Text =
-                $"Học kỳ hiện tại: {AppConfig.HocKyHienTai}\n" +
-                $"Tín chỉ đăng ký: tối thiểu {AppConfig.MinTC} - tối đa {AppConfig.MaxTC}\n" +
-                $"Ngưỡng cảnh báo học vụ (ĐTB tích lũy): {AppConfig.DiemCanhBao:0.0}\n" +
-                $"Thư mục dữ liệu: {_store.DataFolder}";
+                $"Học kỳ: {AppConfig.HocKyHienTai}     |     Tín chỉ: {AppConfig.MinTC} – {AppConfig.MaxTC}     |     Ngưỡng cảnh báo: {AppConfig.DiemCanhBao:0.0}     |     Dữ liệu: {_store.DataFolder}";
 
             int soKhoa = _store.Khoas.Count;
             int soLop = _store.Lops.Count;
@@ -215,53 +231,41 @@ namespace BCWF.Forms
                 string.IsNullOrWhiteSpace(s.Anh) ||
                 !System.IO.File.Exists(_store.LayDuongDanAnh(s.Anh)));
 
-            // Cảnh báo học vụ: ĐTB tích lũy (trung bình các môn đã nhập đủ điểm) < ngưỡng
             int soSvCanhBao = 0;
             var nhacViec = new List<string>();
-            var theoSV = _store.DangKys.GroupBy(d => d.MSSV, StringComparer.OrdinalIgnoreCase);
-            foreach (var g in theoSV)
+            foreach (var g in _store.DangKys.GroupBy(d => d.MSSV, StringComparer.OrdinalIgnoreCase))
             {
                 var daNhap = g.Where(d => d.DaNhapDiem).ToList();
-                if (daNhap.Count == 0)
-                {
-                    continue;
-                }
+                if (daNhap.Count == 0) continue;
                 double tb = daNhap.Average(d =>
                     d.DiemQT!.Value * 0.3 + d.DiemGK!.Value * 0.3 + d.DiemCK!.Value * 0.4);
                 if (tb < AppConfig.DiemCanhBao)
                 {
                     soSvCanhBao++;
                     var sv = _store.SinhViens.FirstOrDefault(s => string.Equals(s.MSSV, g.Key, StringComparison.OrdinalIgnoreCase));
-                    nhacViec.Add($"• {g.Key} {(sv == null ? string.Empty : sv.HoTen)}: ĐTB tích lũy {tb:0.00} < {AppConfig.DiemCanhBao:0.0}");
+                    nhacViec.Add($"⚠ {g.Key} {(sv == null ? "" : sv.HoTen)}: ĐTB {tb:0.00} < {AppConfig.DiemCanhBao:0.0}");
                 }
             }
-
-            foreach (var sv in _store.SinhViens)
+            foreach (var sv in _store.SinhViens.Where(s => string.IsNullOrWhiteSpace(s.Anh) ||
+                !System.IO.File.Exists(_store.LayDuongDanAnh(s.Anh))).Take(5))
             {
-                if (string.IsNullOrWhiteSpace(sv.Anh))
-                {
-                    nhacViec.Add($"• {sv.MSSV} {sv.HoTen}: chưa có ảnh thẻ");
-                }
-                else if (!System.IO.File.Exists(_store.LayDuongDanAnh(sv.Anh)))
-                {
-                    nhacViec.Add($"• {sv.MSSV} {sv.HoTen}: thiếu tệp ảnh '{sv.Anh}'");
-                }
+                nhacViec.Add($"🖼 {sv.MSSV} {sv.HoTen}: {(string.IsNullOrWhiteSpace(sv.Anh) ? "chưa có ảnh thẻ" : "thiếu tệp ảnh")}");
             }
-
             if (svChuaDk > 0)
             {
-                nhacViec.Add($"• {svChuaDk} sinh viên chưa đăng ký môn học nào");
+                nhacViec.Add($"📋 {svChuaDk} sinh viên chưa đăng ký môn học nào");
             }
 
-            lblThongKe.Text =
-                $"Khoa: {soKhoa}\n" +
-                $"Lớp: {soLop}\n" +
-                $"Sinh viên: {soSv}\n" +
-                $"Môn học: {soMon}\n" +
-                $"Lượt đăng ký: {soDk}\n" +
-                $"Sinh viên cảnh báo học vụ: {soSvCanhBao}\n" +
-                $"Sinh viên chưa đăng ký môn: {svChuaDk}\n" +
-                $"Sinh viên thiếu ảnh thẻ: {svThieuAnh}";
+            // Lưới thống kê
+            tlpThongKe.Controls.Clear();
+            ThemOThongKe("Khoa", soKhoa, 0, 0);
+            ThemOThongKe("Lớp", soLop, 1, 0);
+            ThemOThongKe("Sinh viên", soSv, 2, 0);
+            ThemOThongKe("Môn học", soMon, 3, 0);
+            ThemOThongKe("Lượt đăng ký", soDk, 0, 1);
+            ThemOThongKe("SV cảnh báo", soSvCanhBao, 1, 1);
+            ThemOThongKe("SV chưa ĐK", svChuaDk, 2, 1);
+            ThemOThongKe("SV thiếu ảnh", svThieuAnh, 3, 1);
 
             lstNhacViec.Items.Clear();
             if (nhacViec.Count == 0)
@@ -273,15 +277,46 @@ namespace BCWF.Forms
             {
                 lstNhacViec.Visible = true;
                 lblNhacViecTrong.Visible = false;
-                foreach (var item in nhacViec.Take(200))
+                foreach (var item in nhacViec.Take(8))
                 {
                     lstNhacViec.Items.Add(item);
                 }
-                if (nhacViec.Count > 200)
+                if (nhacViec.Count > 8)
                 {
-                    lstNhacViec.Items.Add($"... và {nhacViec.Count - 200} mục khác");
+                    lstNhacViec.Items.Add($"... và {nhacViec.Count - 8} mục khác");
                 }
             }
+        }
+
+        private void ThemOThongKe(string nhan, int giaTri, int col, int row)
+        {
+            var pnl = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(8),
+                Margin = new Padding(4),
+                BackColor = Color.FromArgb(245, 248, 255),
+                Height = 60
+            };
+            var lblGiaTri = new Label
+            {
+                Text = giaTri.ToString(),
+                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(30, 55, 120),
+                AutoSize = true,
+                Location = new Point(8, 6)
+            };
+            var lblNhan = new Label
+            {
+                Text = nhan,
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.DimGray,
+                AutoSize = true,
+                Location = new Point(8, 34)
+            };
+            pnl.Controls.Add(lblGiaTri);
+            pnl.Controls.Add(lblNhan);
+            tlpThongKe.Controls.Add(pnl, col, row);
         }
     }
 }
