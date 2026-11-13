@@ -9,5 +9,4 @@ DUOC;Dược
 KTCT;Kỹ thuật công trình
 NGA;Ngôn ngữ Anh
 DOVU;Đông phương học
-SAD;Sau đại học
 CKDT;Cơ điện - Điện tử

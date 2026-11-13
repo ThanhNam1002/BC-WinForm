@@ -17,6 +17,16 @@ namespace BCWF.Forms
         public FrmDoiMatKhau()
         {
             InitializeComponent();
+
+            AcceptButton = btnDoi;
+            CancelButton = btnHuy;
+
+            // Mở từ trang chủ thì điền sẵn tài khoản đang đăng nhập.
+            if (FrmDangNhap.NguoiDungHienTai != null)
+            {
+                txtUsername.Text = FrmDangNhap.NguoiDungHienTai.TenDangNhap;
+                txtOldPassword.Focus();
+            }
         }
 
         //Đổi mật khẩu

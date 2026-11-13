@@ -38,6 +38,13 @@ namespace BCWF.Forms
 
         private bool _dangNapDanhSach;
 
+        /// <summary>Có điểm vừa sửa nhưng chưa ghi xuống dangky.txt hay không.</summary>
+        private bool _coThayDoiDiem;
+
+        private string _lopDangXem = string.Empty;
+        private string _monDangXem = string.Empty;
+        private string _hocKyDangXem = string.Empty;
+
         /// <summary>Ô nhập điểm đặt đè lên ô điểm đang sửa trên ListView.</summary>
         private readonly TextBox _txtDiem = new TextBox();
 
@@ -53,6 +60,7 @@ namespace BCWF.Forms
         {
             InitializeComponent();
 
+            FormClosing += FrmNhapDiem_FormClosing;
             ChuẩnBịÔNhập();
         }
 
@@ -96,33 +104,49 @@ namespace BCWF.Forms
         /// <summary>Nạp danh sách môn học vào ComboBox.</summary>
         private void NapDanhSachMon()
         {
-            cboMon.Items.Clear();
-            foreach (MonHoc mon in _store.MonHocs.OrderBy(m => m.MaMon))
+            _dangNapDanhSach = true;
+            try
             {
-                cboMon.Items.Add(mon);
-            }
+                cboMon.Items.Clear();
+                foreach (MonHoc mon in _store.MonHocs.OrderBy(m => m.MaMon))
+                {
+                    cboMon.Items.Add(mon);
+                }
 
-            cboMon.SelectedIndex = cboMon.Items.Count > 0 ? 0 : -1;
+                cboMon.SelectedIndex = cboMon.Items.Count > 0 ? 0 : -1;
+            }
+            finally
+            {
+                _dangNapDanhSach = false;
+            }
         }
 
         /// <summary>Chọn học kỳ mặc định lấy từ App.config.</summary>
         private void ChonHocKyMacDinh()
         {
-            string hocKy = AppConfig.HocKyHienTai;
-
-            for (int i = 0; i < cboHocKy.Items.Count; i++)
+            _dangNapDanhSach = true;
+            try
             {
-                string? giaTri = cboHocKy.Items[i]?.ToString();
-                if (string.Equals(giaTri, hocKy, StringComparison.OrdinalIgnoreCase))
+                string hocKy = AppConfig.HocKyHienTai;
+
+                for (int i = 0; i < cboHocKy.Items.Count; i++)
                 {
-                    cboHocKy.SelectedIndex = i;
-                    return;
+                    string? giaTri = cboHocKy.Items[i]?.ToString();
+                    if (string.Equals(giaTri, hocKy, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cboHocKy.SelectedIndex = i;
+                        return;
+                    }
+                }
+
+                if (cboHocKy.Items.Count > 0)
+                {
+                    cboHocKy.SelectedIndex = 0;
                 }
             }
-
-            if (cboHocKy.Items.Count > 0)
+            finally
             {
-                cboHocKy.SelectedIndex = 0;
+                _dangNapDanhSach = false;
             }
         }
 
@@ -133,6 +157,12 @@ namespace BCWF.Forms
                 return;
             }
 
+            if (!KiemTraDiemChuaLuu())
+            {
+                KhoiPhucLop();
+                return;
+            }
+
             // Khi đổi lớp thì nạp lại bảng điểm (nếu đã chọn môn).
             if (cboMon.SelectedIndex >= 0)
             {
@@ -140,10 +170,153 @@ namespace BCWF.Forms
             }
         }
 
+        private void cboMon_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_dangNapDanhSach)
+            {
+                return;
+            }
+
+            if (!KiemTraDiemChuaLuu())
+            {
+                KhoiPhucMon();
+                return;
+            }
+
+            // Đổi môn phải nạp lại bảng điểm, nếu không ListView vẫn hiển thị
+            // điểm của môn cũ trong khi ComboBox đã chọn môn mới.
+            NapLaiBangDiem();
+        }
+
+        private void cboHocKy_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_dangNapDanhSach)
+            {
+                return;
+            }
+
+            if (!KiemTraDiemChuaLuu())
+            {
+                KhoiPhucHocKy();
+                return;
+            }
+
+            NapLaiBangDiem();
+        }
+
         private void btnTaiDanhSach_Click(object sender, EventArgs e)
         {
+            if (!KiemTraDiemChuaLuu())
+            {
+                return;
+            }
+
             // Đổ sinh viên của lớp và môn đang chọn lên lvDiem.
             NapLaiBangDiem();
+        }
+
+        /// <summary>
+        /// Chốt ô điểm đang gõ và kiểm tra xem còn điểm chưa ghi xuống tệp hay không.
+        /// Trả về false để form biết cần hủy thao tác chuyển lớp/môn/học kỳ.
+        /// </summary>
+        private bool KiemTraDiemChuaLuu()
+        {
+            if (_itemDangSua != null)
+            {
+                GhiDiemDangSua();
+            }
+
+            if (!_coThayDoiDiem)
+            {
+                return true;
+            }
+
+            MessageBox.Show(
+                "Bạn có điểm chưa lưu. Hãy bấm 'Lưu điểm' trước khi đổi lớp, môn học hoặc học kỳ.",
+                "Điểm chưa lưu",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return false;
+        }
+
+        private void KhoiPhucLop()
+        {
+            _dangNapDanhSach = true;
+            try
+            {
+                foreach (object item in cboLop.Items)
+                {
+                    if (item is Lop lop &&
+                        string.Equals(lop.MaLop, _lopDangXem, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cboLop.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                _dangNapDanhSach = false;
+            }
+        }
+
+        private void KhoiPhucMon()
+        {
+            _dangNapDanhSach = true;
+            try
+            {
+                foreach (object item in cboMon.Items)
+                {
+                    if (item is MonHoc mon &&
+                        string.Equals(mon.MaMon, _monDangXem, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cboMon.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                _dangNapDanhSach = false;
+            }
+        }
+
+        private void KhoiPhucHocKy()
+        {
+            _dangNapDanhSach = true;
+            try
+            {
+                cboHocKy.SelectedItem = _hocKyDangXem;
+            }
+            finally
+            {
+                _dangNapDanhSach = false;
+            }
+        }
+
+        private void FrmNhapDiem_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            if (_itemDangSua != null)
+            {
+                GhiDiemDangSua();
+            }
+
+            if (!_coThayDoiDiem)
+            {
+                return;
+            }
+
+            DialogResult xacNhan = MessageBox.Show(
+                "Bạn có điểm chưa lưu. Thoát và bỏ các thay đổi?",
+                "Xác nhận thoát",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (xacNhan != DialogResult.Yes)
+            {
+                e.Cancel = true;
+            }
         }
 
         #endregion
@@ -195,6 +368,12 @@ namespace BCWF.Forms
             }
 
             CapNhatTongKet();
+
+            // Ghi nhớ mốc đang xem để có thể quay lại nếu người dùng chọn không bỏ điểm chưa lưu.
+            _lopDangXem = lop.MaLop;
+            _monDangXem = mon.MaMon;
+            _hocKyDangXem = hocKy;
+            _coThayDoiDiem = false;
         }
 
         /// <summary>Tạo dòng ListView từ dữ liệu điểm của một sinh viên.</summary>
@@ -228,7 +407,11 @@ namespace BCWF.Forms
             item.SubItems[CotXepLoai].Text = tongKet.HasValue ? _diemService.XepLoai(tongKet.Value) : string.Empty;
 
             double dtb = _diemService.TinhDiemTrungBinhTichLuy(dong.MSSV);
-            item.SubItems[CotDtbTichLuy].Text = dtb > 0 ? dtb.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty;
+            bool coDiemTichLuy = _store.DangKys.Any(dk =>
+                string.Equals(dk.MSSV, dong.MSSV, StringComparison.OrdinalIgnoreCase) && dk.DaNhapDiem);
+            item.SubItems[CotDtbTichLuy].Text = coDiemTichLuy
+                ? dtb.ToString("0.##", CultureInfo.InvariantCulture)
+                : string.Empty;
 
             item.SubItems[CotGhiChu].Text = rot ? "Rớt môn" : (dong.DangKy == null ? "Chưa đăng ký" : string.Empty);
 
@@ -248,8 +431,11 @@ namespace BCWF.Forms
 
         private void btnLuuDiem_Click(object sender, EventArgs e)
         {
-            // Ghi điểm vừa sửa xuống dangky.txt.
-            HuyDangSua();
+            // Chốt ô đang sửa rồi ghi điểm xuống dangky.txt.
+            if (_itemDangSua != null)
+            {
+                GhiDiemDangSua();
+            }
 
             if (lvDiem.Items.Count == 0)
             {
@@ -273,6 +459,7 @@ namespace BCWF.Forms
                 }
 
                 _diemService.LuuDiem(diemCanNap);
+                _coThayDoiDiem = false;
 
                 MessageBox.Show($"Đã lưu điểm của {diemCanNap.Count} sinh viên xuống tệp dangky.txt.", "Thông báo",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -288,9 +475,30 @@ namespace BCWF.Forms
 
         private void btnTaiLai_Click(object sender, EventArgs e)
         {
+            if (_itemDangSua != null)
+            {
+                GhiDiemDangSua();
+            }
+
+            if (_coThayDoiDiem)
+            {
+                DialogResult xacNhan = MessageBox.Show(
+                    "Bạn có điểm chưa lưu. Tải lại sẽ bỏ các thay đổi này. Tiếp tục?",
+                    "Xác nhận tải lại",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2);
+
+                if (xacNhan != DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
             // Tải lại bảng điểm từ tệp.
             try
             {
+                _coThayDoiDiem = false;
                 _store.LoadAll();
             }
             catch (Exception ex)
@@ -530,6 +738,13 @@ namespace BCWF.Forms
             ListViewItem item = _itemDangSua;
             int cot = _cotDangSua;
 
+            double? diemCu = cot switch
+            {
+                CotDiemQT => dong.DangKy.DiemQT,
+                CotDiemGK => dong.DangKy.DiemGK,
+                _ => dong.DangKy.DiemCK
+            };
+
             switch (cot)
             {
                 case CotDiemQT:
@@ -541,6 +756,11 @@ namespace BCWF.Forms
                 default:
                     dong.DangKy.DiemCK = diem;
                     break;
+            }
+
+            if (diemCu != diem)
+            {
+                _coThayDoiDiem = true;
             }
 
             HuyDangSua();

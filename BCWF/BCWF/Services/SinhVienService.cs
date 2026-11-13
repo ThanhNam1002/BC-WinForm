@@ -105,6 +105,62 @@ namespace BCWF.Services
             _store.LuuSinhVien();
         }
 
+        /// <summary>
+        /// Đổi MSSV của một sinh viên và cập nhật toàn bộ đăng ký liên quan.
+        /// Thực hiện trên bộ nhớ rồi mới ghi tệp, tránh để lại cả bản ghi cũ lẫn mới.
+        /// </summary>
+        public void DoiMSSV(string mssvCu, SinhVien sinhVien)
+        {
+            if (sinhVien == null)
+            {
+                throw new ArgumentNullException(nameof(sinhVien));
+            }
+
+            if (string.IsNullOrWhiteSpace(mssvCu))
+            {
+                throw new ArgumentException("MSSV cũ không được để trống.", nameof(mssvCu));
+            }
+
+            if (string.IsNullOrWhiteSpace(sinhVien.MSSV))
+            {
+                throw new ArgumentException("MSSV không được để trống.", nameof(sinhVien));
+            }
+
+            if (string.IsNullOrWhiteSpace(sinhVien.HoTen))
+            {
+                throw new ArgumentException("Họ tên không được để trống.", nameof(sinhVien));
+            }
+
+            if (string.IsNullOrWhiteSpace(sinhVien.MaLop))
+            {
+                throw new ArgumentException("Mã lớp không được để trống.", nameof(sinhVien));
+            }
+
+            int viTri = _store.SinhViens.FindIndex(sv =>
+                string.Equals(sv.MSSV, mssvCu, StringComparison.OrdinalIgnoreCase));
+
+            if (viTri < 0)
+            {
+                throw new InvalidOperationException($"Không tìm thấy sinh viên có MSSV '{mssvCu}'.");
+            }
+
+            if (KiemTraTrungMSSV(sinhVien.MSSV, mssvCu))
+            {
+                throw new InvalidOperationException($"MSSV '{sinhVien.MSSV}' đã tồn tại.");
+            }
+
+            _store.SinhViens[viTri] = sinhVien;
+
+            foreach (DangKy dangKy in _store.DangKys.Where(dk =>
+                string.Equals(dk.MSSV, mssvCu, StringComparison.OrdinalIgnoreCase)))
+            {
+                dangKy.MSSV = sinhVien.MSSV;
+            }
+
+            _store.LuuSinhVien();
+            _store.LuuDangKy();
+        }
+
         public void Xoa(string mssv)
         {
             if (string.IsNullOrWhiteSpace(mssv))

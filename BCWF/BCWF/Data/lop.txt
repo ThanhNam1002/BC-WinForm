@@ -15,8 +15,6 @@ TCKT01;Tài chính - Kế toán Khoá 1;TCKT
 TCKT02;Tài chính - Kế toán Khoá 2;TCKT
 TCKT03;Tài chính - Kế toán Khoá 3;TCKT
 CKDT01;Cơ điện - Điện tử Khoá 1;CKDT
-CKDT02;Cơ điện - Điện tử Khoá 2;CKDT
-CKDT03;Cơ điện - Điện tử Khoá 3;CKDT
 CNTP01;Công nghệ thực phẩm Khoá 1;CNTP
 CNTP02;Công nghệ thực phẩm Khoá 2;CNTP
 CNTP03;Công nghệ thực phẩm Khoá 3;CNTP

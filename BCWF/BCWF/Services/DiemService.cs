@@ -138,8 +138,15 @@ namespace BCWF.Services
         {
             double nguong = AppConfig.DiemCanhBao;
 
+            // Chỉ xét sinh viên đã có ít nhất một môn nhập đủ 3 đầu điểm.
+            // Sinh viên chưa có điểm (hoặc mới nhập một phần) chưa đủ căn cứ để cảnh báo.
+            var coDiem = new HashSet<string>(
+                _store.DangKys.Where(dk => dk.DaNhapDiem).Select(dk => dk.MSSV),
+                StringComparer.OrdinalIgnoreCase);
+
             return _store.SinhViens
-                .Where(sv => TinhDiemTrungBinhTichLuy(sv.MSSV) < nguong)
+                .Where(sv => coDiem.Contains(sv.MSSV)
+                          && TinhDiemTrungBinhTichLuy(sv.MSSV) < nguong)
                 .OrderBy(sv => sv.MSSV)
                 .ToList();
         }

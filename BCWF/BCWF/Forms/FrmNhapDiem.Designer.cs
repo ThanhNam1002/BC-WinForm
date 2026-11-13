@@ -108,6 +108,7 @@ namespace BCWF.Forms
             cboMon.Name = "cboMon";
             cboMon.Size = new Size(250, 28);
             cboMon.TabIndex = 3;
+            cboMon.SelectedIndexChanged += cboMon_SelectedIndexChanged;
             // 
             // lblHocKy
             // 
@@ -127,6 +128,7 @@ namespace BCWF.Forms
             cboHocKy.Name = "cboHocKy";
             cboHocKy.Size = new Size(90, 28);
             cboHocKy.TabIndex = 5;
+            cboHocKy.SelectedIndexChanged += cboHocKy_SelectedIndexChanged;
             // 
             // btnTaiDanhSach
             // 

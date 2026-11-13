@@ -34,21 +34,11 @@ namespace BCWF.Forms
             lvCanhBao.BeginUpdate();
             lvCanhBao.Items.Clear();
 
-            // Chỉ tính sinh viên đã có ít nhất một môn có điểm (chưa có điểm thì chưa đánh giá được).
-            var coDiem = new HashSet<string>(
-                _store.DangKys.Where(dk => dk.DiemQT.HasValue || dk.DiemGK.HasValue || dk.DiemCK.HasValue)
-                    .Select(dk => dk.MSSV),
-                StringComparer.OrdinalIgnoreCase);
-
             double nguong = AppConfig.DiemCanhBao;
 
+            // LayDanhSachCanhBao chỉ trả về sinh viên đã có ít nhất một môn nhập đủ điểm.
             foreach (SinhVien sv in _diemService.LayDanhSachCanhBao())
             {
-                if (!coDiem.Contains(sv.MSSV))
-                {
-                    continue;
-                }
-
                 double dtb = _diemService.TinhDiemTrungBinhTichLuy(sv.MSSV);
 
                 var item = new ListViewItem(sv.MSSV)

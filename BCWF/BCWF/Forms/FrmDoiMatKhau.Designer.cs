@@ -130,6 +130,7 @@
             btnDoi.TabIndex = 16;
             btnDoi.Text = "Đổi mật khẩu";
             btnDoi.UseVisualStyleBackColor = false;
+            btnDoi.Click += btnDoi_Click;
             // 
             // btnHuy
             // 
@@ -139,6 +140,7 @@
             btnHuy.Size = new Size(150, 62);
             btnHuy.TabIndex = 17;
             btnHuy.Text = "Hủy";
+            btnHuy.Click += btnHuy_Click;
             // 
             // FrmDoiMatKhau
             // 
@@ -157,7 +159,7 @@
             Controls.Add(lblTitle);
             Controls.Add(lblUsername);
             Name = "FrmDoiMatKhau";
-            Text = "FrmDoiMatKhau";
+            Text = "Đổi mật khẩu";
             ResumeLayout(false);
             PerformLayout();
         }

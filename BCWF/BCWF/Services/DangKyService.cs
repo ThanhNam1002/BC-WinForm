@@ -104,18 +104,39 @@ namespace BCWF.Services
 
             monHoc.MaMonTienQuyet = KiemTraMaTienQuyetHopLe(monHoc.MaMonTienQuyet, monHoc.MaMon);
 
-            // Nếu đổi mã thì cập nhật cả mã môn tiên quyết của các môn trỏ đến mã cũ.
-            if (!string.Equals(maGoc, monHoc.MaMon, StringComparison.OrdinalIgnoreCase))
+            bool doiMa = !string.Equals(maGoc, monHoc.MaMon, StringComparison.OrdinalIgnoreCase);
+
+            // Nếu đổi mã thì cập nhật cả mã môn tiên quyết của các môn trỏ đến mã cũ,
+            // đồng thời chuyển các đăng ký và lịch học sang mã mới để không mất liên kết.
+            if (doiMa)
             {
                 foreach (MonHoc monKhac in _store.MonHocs.Where(m =>
                     string.Equals(m.MaMonTienQuyet, maGoc, StringComparison.OrdinalIgnoreCase)))
                 {
                     monKhac.MaMonTienQuyet = monHoc.MaMon;
                 }
+
+                foreach (DangKy dangKy in _store.DangKys.Where(dk =>
+                    string.Equals(dk.MaMon, maGoc, StringComparison.OrdinalIgnoreCase)))
+                {
+                    dangKy.MaMon = monHoc.MaMon;
+                }
+
+                foreach (LichHoc lichHoc in _store.LichHocs.Where(lh =>
+                    string.Equals(lh.MaMon, maGoc, StringComparison.OrdinalIgnoreCase)))
+                {
+                    lichHoc.MaMon = monHoc.MaMon;
+                }
             }
 
             _store.MonHocs[viTri] = monHoc;
             _store.LuuMonHoc();
+
+            if (doiMa)
+            {
+                _store.LuuDangKy();
+                _store.LuuLichHoc();
+            }
         }
 
         public void XoaMonHoc(string maMon)
@@ -358,6 +379,24 @@ namespace BCWF.Services
                 .Select(ma => ma.Trim())
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
+
+            // Không âm thầm bỏ qua việc hủy môn đã có điểm: báo lỗi để người dùng biết
+            // và chủ động xử lý bảng điểm trước khi thay đổi đăng ký.
+            var monCoDiemBiHuy = _store.DangKys
+                .Where(dk => string.Equals(dk.MSSV, mssv, StringComparison.OrdinalIgnoreCase)
+                          && string.Equals(dk.HocKy, hocKy ?? string.Empty, StringComparison.OrdinalIgnoreCase)
+                          && (dk.DiemQT.HasValue || dk.DiemGK.HasValue || dk.DiemCK.HasValue)
+                          && !dsMoi.Contains(dk.MaMon, StringComparer.OrdinalIgnoreCase))
+                .Select(dk => dk.MaMon)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (monCoDiemBiHuy.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    "Không thể hủy các môn đã có điểm: " + string.Join(", ", monCoDiemBiHuy)
+                    + ". Hãy xóa điểm của các môn này trước nếu thực sự muốn hủy đăng ký.");
+            }
 
             // Các bản ghi cũ của học kỳ không còn trong danh sách mới thì hủy;
             // bản ghi đã có điểm (kể cả một phần) là dữ liệu bảng điểm nên giữ lại không xóa.

@@ -23,6 +23,7 @@ namespace BCWF.Forms
         public FrmDangKy()
         {
             InitializeComponent();
+            FormClosing += FrmDangKy_FormClosing;
         }
 
         private void FrmDangKy_Load(object sender, EventArgs e)
@@ -36,6 +37,10 @@ namespace BCWF.Forms
             cboHocKy.SelectedIndex = viTri >= 0 ? viTri : 0;
 
             lblGioiHan.Text = $"Giới hạn tín chỉ: {AppConfig.MinTC} – {AppConfig.MaxTC}";
+
+            // Trước đây tab đăng ký để trống cho đến khi người dùng đổi lớp/sinh viên.
+            // Nạp sẵn lớp đầu tiên, sinh viên đầu tiên và đăng ký của sinh viên đó.
+            NapDanhSachSinhVien();
         }
 
         #region Nạp dữ liệu
@@ -113,6 +118,9 @@ namespace BCWF.Forms
             {
                 _dangNap = false;
             }
+
+            // Đổi lớp phải nạp lại đăng ký của sinh viên đầu tiên trong lớp mới.
+            NapDangKyHienTai();
         }
 
         /// <summary>Đổ lại 2 ListBox theo dữ liệu dangky.txt của sinh viên/học kỳ đang chọn.</summary>
@@ -145,6 +153,13 @@ namespace BCWF.Forms
             lstDaDangKy.EndUpdate();
 
             CapNhatTongTinChi();
+
+            // Ghi nhớ mốc dữ liệu đang xem để có thể quay lại nếu người dùng
+            // chọn không bỏ các thay đổi chưa lưu.
+            _coThayDoiDangKy = false;
+            _maLopDangXem = (cboLop.SelectedItem as Lop)?.MaLop ?? string.Empty;
+            _mssvDangXem = mssv ?? string.Empty;
+            _hocKyDangXem = hocKy ?? string.Empty;
         }
 
         /// <summary>Cập nhật nhãn tổng tín chỉ theo các môn đang chọn.</summary>
@@ -245,11 +260,18 @@ namespace BCWF.Forms
                 return;
             }
 
+            // Thêm môn sẽ nạp lại 2 ListBox, nên hỏi trước nếu đang có thay đổi đăng ký chưa lưu.
+            if (!XacNhanBoThayDoiDangKy())
+            {
+                return;
+            }
+
             try
             {
                 _dangKyService.ThemMonHoc(mon);
                 NapMonHoc();
                 XoaVungNhap();
+                NapDangKyHienTai();
                 MessageBox.Show("Thêm môn học thành công.", "Thông báo",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -276,6 +298,11 @@ namespace BCWF.Forms
 
             MonHoc? mon = DocMonTuForm();
             if (mon == null)
+            {
+                return;
+            }
+
+            if (!XacNhanBoThayDoiDangKy())
             {
                 return;
             }
@@ -313,6 +340,11 @@ namespace BCWF.Forms
                 $"Bạn có chắc muốn xóa môn '{mon.MaMon} - {mon.TenMon}'?",
                 "Xác nhận xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (xacNhan != DialogResult.Yes)
+            {
+                return;
+            }
+
+            if (!XacNhanBoThayDoiDangKy())
             {
                 return;
             }
@@ -360,6 +392,12 @@ namespace BCWF.Forms
                 return;
             }
 
+            if (!XacNhanBoThayDoiDangKy())
+            {
+                KhoiPhucLop();
+                return;
+            }
+
             NapDanhSachSinhVien();
         }
 
@@ -370,6 +408,12 @@ namespace BCWF.Forms
                 return;
             }
 
+            if (!XacNhanBoThayDoiDangKy())
+            {
+                KhoiPhucSinhVien();
+                return;
+            }
+
             NapDangKyHienTai();
         }
 
@@ -377,6 +421,12 @@ namespace BCWF.Forms
         {
             if (_dangNap)
             {
+                return;
+            }
+
+            if (!XacNhanBoThayDoiDangKy())
+            {
+                KhoiPhucHocKy();
                 return;
             }
 
@@ -443,18 +493,25 @@ namespace BCWF.Forms
                 lstDaDangKy.Items.Add(mon);
             }
 
+            _coThayDoiDangKy = true;
             CapNhatTongTinChi();
         }
 
         private void btnBoMon_Click(object sender, EventArgs e)
         {
             var monBo = lstDaDangKy.SelectedItems.Cast<MonHoc>().ToList();
+            if (monBo.Count == 0)
+            {
+                return;
+            }
+
             foreach (MonHoc mon in monBo)
             {
                 lstDaDangKy.Items.Remove(mon);
                 lstChuaDangKy.Items.Add(mon);
             }
 
+            _coThayDoiDangKy = true;
             CapNhatTongTinChi();
         }
 
@@ -530,6 +587,11 @@ namespace BCWF.Forms
 
         private void btnLamMoiDangKy_Click(object sender, EventArgs e)
         {
+            if (!XacNhanBoThayDoiDangKy())
+            {
+                return;
+            }
+
             NapDangKyHienTai();
         }
 
@@ -537,5 +599,116 @@ namespace BCWF.Forms
 
         /// <summary>Cờ chặn sự kiện SelectedIndexChanged khi đang nạp dữ liệu bằng code.</summary>
         private bool _dangNap;
+
+        /// <summary>Có thay đổi đăng ký (chuyển môn giữa 2 ListBox) chưa lưu hay không.</summary>
+        private bool _coThayDoiDangKy;
+
+        private string _maLopDangXem = string.Empty;
+        private string _mssvDangXem = string.Empty;
+        private string _hocKyDangXem = string.Empty;
+
+        /// <summary>Hỏi trước khi bỏ các thay đổi đăng ký chưa lưu.</summary>
+        private bool XacNhanBoThayDoiDangKy()
+        {
+            if (!_coThayDoiDangKy)
+            {
+                return true;
+            }
+
+            DialogResult xacNhan = MessageBox.Show(
+                "Bạn có thay đổi đăng ký chưa lưu. Bỏ các thay đổi?",
+                "Xác nhận",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (xacNhan != DialogResult.Yes)
+            {
+                return false;
+            }
+
+            _coThayDoiDangKy = false;
+            return true;
+        }
+
+        /// <summary>Quay lại lớp đang xem nếu người dùng không muốn bỏ thay đổi.</summary>
+        private void KhoiPhucLop()
+        {
+            _dangNap = true;
+            try
+            {
+                cboLop.SelectedIndex = -1;
+                for (int i = 0; i < cboLop.Items.Count; i++)
+                {
+                    if (cboLop.Items[i] is Lop lop &&
+                        string.Equals(lop.MaLop, _maLopDangXem, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cboLop.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                _dangNap = false;
+            }
+        }
+
+        /// <summary>Quay lại sinh viên đang xem nếu người dùng không muốn bỏ thay đổi.</summary>
+        private void KhoiPhucSinhVien()
+        {
+            _dangNap = true;
+            try
+            {
+                cboSinhVien.SelectedIndex = -1;
+                for (int i = 0; i < cboSinhVien.Items.Count; i++)
+                {
+                    if (cboSinhVien.Items[i] is SinhVien sv &&
+                        string.Equals(sv.MSSV, _mssvDangXem, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cboSinhVien.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                _dangNap = false;
+            }
+        }
+
+        /// <summary>Quay lại học kỳ đang xem nếu người dùng không muốn bỏ thay đổi.</summary>
+        private void KhoiPhucHocKy()
+        {
+            _dangNap = true;
+            try
+            {
+                cboHocKy.SelectedItem = _hocKyDangXem;
+            }
+            finally
+            {
+                _dangNap = false;
+            }
+        }
+
+        private void FrmDangKy_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            if (!_coThayDoiDangKy)
+            {
+                return;
+            }
+
+            DialogResult xacNhan = MessageBox.Show(
+                "Bạn có thay đổi đăng ký chưa lưu. Thoát và bỏ các thay đổi?",
+                "Xác nhận thoát",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (xacNhan != DialogResult.Yes)
+            {
+                e.Cancel = true;
+            }
+        }
     }
 }

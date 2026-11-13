@@ -37,7 +37,6 @@ namespace BCWF
             nhapDiemMenuItem = new ToolStripMenuItem();
             baoCaoMenu = new ToolStripMenuItem();
             canhBaoHocVuMenuItem = new ToolStripMenuItem();
-            panelNoiDung = new Panel();
             cửaSổToolStripMenuItem = new ToolStripMenuItem();
             xepChongToolStripMenuItem = new ToolStripMenuItem();
             xepNgangToolStripMenuItem = new ToolStripMenuItem();
@@ -67,7 +66,6 @@ namespace BCWF
             // thoatMenuItem
             // 
             thoatMenuItem.Name = "thoatMenuItem";
-            thoatMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
             thoatMenuItem.Size = new Size(224, 26);
             thoatMenuItem.Text = "Thoát";
             thoatMenuItem.Click += thoatMenuItem_Click;
@@ -114,14 +112,6 @@ namespace BCWF
             canhBaoHocVuMenuItem.Text = "Danh sách cảnh báo học vụ";
             canhBaoHocVuMenuItem.Click += canhBaoHocVuMenuItem_Click;
             // 
-            // panelNoiDung
-            // 
-            panelNoiDung.Dock = DockStyle.Fill;
-            panelNoiDung.Location = new Point(0, 28);
-            panelNoiDung.Name = "panelNoiDung";
-            panelNoiDung.Size = new Size(1100, 622);
-            panelNoiDung.TabIndex = 1;
-            // 
             // cửaSổToolStripMenuItem
             // 
             cửaSổToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { xepChongToolStripMenuItem, xepNgangToolStripMenuItem, xepDocStripMenuItem, toolStripSeparator1, dongTatCaToolStripMenuItem });
@@ -163,7 +153,6 @@ namespace BCWF
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1100, 650);
-            Controls.Add(panelNoiDung);
             Controls.Add(menuStrip1);
             IsMdiContainer = true;
             MainMenuStrip = menuStrip1;
@@ -188,7 +177,6 @@ namespace BCWF
         private ToolStripMenuItem nhapDiemMenuItem;
         private ToolStripMenuItem baoCaoMenu;
         private ToolStripMenuItem canhBaoHocVuMenuItem;
-        private Panel panelNoiDung;
         private ToolStripMenuItem cửaSổToolStripMenuItem;
         private ToolStripMenuItem xepChongToolStripMenuItem;
         private ToolStripMenuItem xepNgangToolStripMenuItem;

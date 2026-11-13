@@ -52,6 +52,7 @@ namespace BCWF.Forms
             btnChonAnh = new Button();
             btnThem = new Button();
             btnSua = new Button();
+            btnHuy = new Button();
             btnXoa = new Button();
             btnLamMoi = new Button();
             btnNhapCsv = new Button();
@@ -136,6 +137,7 @@ namespace BCWF.Forms
             pnlEdit.Controls.Add(btnChonAnh);
             pnlEdit.Controls.Add(btnThem);
             pnlEdit.Controls.Add(btnSua);
+            pnlEdit.Controls.Add(btnHuy);
             pnlEdit.Controls.Add(btnXoa);
             pnlEdit.Controls.Add(btnLamMoi);
             pnlEdit.Controls.Add(btnNhapCsv);
@@ -284,33 +286,44 @@ namespace BCWF.Forms
             btnSua.Text = "Sửa";
             btnSua.UseVisualStyleBackColor = true;
             btnSua.Click += btnSua_Click;
+            //
+            // btnHuy
+            //
+            btnHuy.Enabled = false;
+            btnHuy.Location = new Point(303, 164);
+            btnHuy.Name = "btnHuy";
+            btnHuy.Size = new Size(95, 32);
+            btnHuy.TabIndex = 15;
+            btnHuy.Text = "Hủy";
+            btnHuy.UseVisualStyleBackColor = true;
+            btnHuy.Click += btnHuy_Click;
             // 
             // btnXoa
             // 
-            btnXoa.Location = new Point(302, 164);
+            btnXoa.Location = new Point(409, 164);
             btnXoa.Name = "btnXoa";
             btnXoa.Size = new Size(95, 32);
-            btnXoa.TabIndex = 15;
+            btnXoa.TabIndex = 16;
             btnXoa.Text = "Xóa";
             btnXoa.UseVisualStyleBackColor = true;
             btnXoa.Click += btnXoa_Click;
             // 
             // btnLamMoi
             // 
-            btnLamMoi.Location = new Point(407, 164);
+            btnLamMoi.Location = new Point(515, 164);
             btnLamMoi.Name = "btnLamMoi";
             btnLamMoi.Size = new Size(95, 32);
-            btnLamMoi.TabIndex = 16;
+            btnLamMoi.TabIndex = 17;
             btnLamMoi.Text = "Làm mới";
             btnLamMoi.UseVisualStyleBackColor = true;
             btnLamMoi.Click += btnLamMoi_Click;
             // 
             // btnNhapCsv
             // 
-            btnNhapCsv.Location = new Point(512, 164);
+            btnNhapCsv.Location = new Point(621, 164);
             btnNhapCsv.Name = "btnNhapCsv";
             btnNhapCsv.Size = new Size(160, 32);
-            btnNhapCsv.TabIndex = 17;
+            btnNhapCsv.TabIndex = 18;
             btnNhapCsv.Text = "Nhập từ CSV...";
             btnNhapCsv.UseVisualStyleBackColor = true;
             btnNhapCsv.Click += btnNhapCsv_Click;
@@ -395,6 +408,7 @@ namespace BCWF.Forms
         private Button btnChonAnh;
         private Button btnThem;
         private Button btnSua;
+        private Button btnHuy;
         private Button btnXoa;
         private Button btnLamMoi;
         private Button btnNhapCsv;

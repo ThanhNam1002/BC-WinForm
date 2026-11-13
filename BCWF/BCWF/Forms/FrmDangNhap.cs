@@ -30,8 +30,8 @@ namespace BCWF.Forms
         public FrmDangNhap()
         {
             InitializeComponent();
-            lnkDoiMatKhau.Click += lnkDoiMatKhau_Click;
-            btnHuy.Click += btnHuy_Click;
+            AcceptButton = btnDangNhap;
+            CancelButton = btnHuy;
             MakePictureBoxCircular(pictureBox1);
             pictureBox1.SizeChanged += (s, e) => MakePictureBoxCircular(pictureBox1);
 

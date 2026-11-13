@@ -67,7 +67,6 @@
             // 
             txtUsername.Location = new Point(169, 73);
             txtUsername.Margin = new Padding(3, 4, 3, 4);
-            txtUsername.Multiline = true;
             txtUsername.Name = "txtUsername";
             txtUsername.Size = new Size(228, 36);
             txtUsername.TabIndex = 2;
@@ -86,7 +85,6 @@
             // 
             txtPassword.Location = new Point(169, 133);
             txtPassword.Margin = new Padding(3, 4, 3, 4);
-            txtPassword.Multiline = true;
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '*';
             txtPassword.Size = new Size(228, 36);
@@ -126,6 +124,7 @@
             btnHuy.TabIndex = 6;
             btnHuy.Text = "Hủy";
             btnHuy.UseVisualStyleBackColor = true;
+            btnHuy.Click += btnHuy_Click;
             // 
             // lnkDoiMatKhau
             // 
@@ -135,7 +134,7 @@
             lnkDoiMatKhau.Size = new Size(116, 20);
             lnkDoiMatKhau.TabIndex = 7;
             lnkDoiMatKhau.TabStop = true;
-            lnkDoiMatKhau.Text = "Quên mật khẩu?";
+            lnkDoiMatKhau.Text = "Đổi mật khẩu";
             lnkDoiMatKhau.Click += lnkDoiMatKhau_Click;
             // 
             // pictureBox1

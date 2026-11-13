@@ -14,6 +14,12 @@ namespace BCWF
         /// <summary>Các form đã tạo, giữ lại để chuyển qua lại mà không mất trạng thái.</summary>
         private readonly Dictionary<Type, Form> _cacFormDaMo = new Dictionary<Type, Form>();
 
+        /// <summary>Màu nền người dùng đã chọn; null nghĩa là dùng giao diện mặc định.</summary>
+        private Color? _mauNen;
+
+        /// <summary>Phông chữ người dùng đã chọn; null nghĩa là dùng phông mặc định.</summary>
+        private Font? _phongChu;
+
         public FrmMain()
         {
             InitializeComponent();
@@ -24,24 +30,16 @@ namespace BCWF
             xepDocStripMenuItem.Click += xepDocStripMenuItem_Click;
             dongTatCaToolStripMenuItem.Click += dongTatCaToolStripMenuItem_Click;
 
-            // The MDI client area is used to host child windows; hide the
-            // single-content panel so it does not cover them.
-            panelNoiDung.Visible = false;
-
             // Mở trang chủ mặc định ngay sau khi đăng nhập.
             MoFormCon<Forms.FrmTrangChu>();
 
-            // Mục "Trang chủ" trong menu Hệ thống để quay lại trang chủ.
-            var trangChuMenuItem = new ToolStripMenuItem("Trang chủ")
-            {
-                ShortcutKeys = Keys.Control | Keys.Home
-            };
+            // Dựng lại menu Hệ thống theo thứ tự rõ ràng, không hiển thị phím tắt
+            // và luôn có lối vào Đổi mật khẩu sau khi đăng nhập.
+            var trangChuMenuItem = new ToolStripMenuItem("Trang chủ");
             trangChuMenuItem.Click += (s, e) => MoFormCon<Forms.FrmTrangChu>();
-            heThongMenu.DropDownItems.Insert(0, trangChuMenuItem);
-            heThongMenu.DropDownItems.Insert(1, new ToolStripSeparator());
 
-            // Phân quyền: từng vai trò nhìn thấy menu khác nhau.
-            ChinhMenuTheoVaiTro();
+            var doiMatKhauMenuItem = new ToolStripMenuItem("Đổi mật khẩu...");
+            doiMatKhauMenuItem.Click += DoiMatKhau_Click;
 
             // Menu tùy chỉnh giao diện (ColorDialog / FontDialog, lưu lựa chọn vào Registry).
             var tuyChinhMenuItem = new ToolStripMenuItem("Tùy chỉnh giao diện");
@@ -51,7 +49,13 @@ namespace BCWF
             doiFontMenuItem.Click += DoiPhongChu_Click;
             tuyChinhMenuItem.DropDownItems.Add(doiMauMenuItem);
             tuyChinhMenuItem.DropDownItems.Add(doiFontMenuItem);
-            heThongMenu.DropDownItems.Insert(2, tuyChinhMenuItem);
+
+            heThongMenu.DropDownItems.Clear();
+            heThongMenu.DropDownItems.Add(trangChuMenuItem);
+            heThongMenu.DropDownItems.Add(new ToolStripSeparator());
+            heThongMenu.DropDownItems.Add(doiMatKhauMenuItem);
+            heThongMenu.DropDownItems.Add(new ToolStripSeparator());
+            heThongMenu.DropDownItems.Add(tuyChinhMenuItem);
 
             // Menu sao lưu / khôi phục dữ liệu (chỉ dành cho quản trị viên).
             if (LaQuanTri)
@@ -64,8 +68,15 @@ namespace BCWF
                 var duLieuMenuItem = new ToolStripMenuItem("Dữ liệu");
                 duLieuMenuItem.DropDownItems.Add(saoLuuMenuItem);
                 duLieuMenuItem.DropDownItems.Add(khoiPhucMenuItem);
-                heThongMenu.DropDownItems.Insert(3, duLieuMenuItem);
+                heThongMenu.DropDownItems.Add(new ToolStripSeparator());
+                heThongMenu.DropDownItems.Add(duLieuMenuItem);
             }
+
+            heThongMenu.DropDownItems.Add(new ToolStripSeparator());
+            heThongMenu.DropDownItems.Add(thoatMenuItem);
+
+            // Phân quyền: từng vai trò nhìn thấy menu khác nhau.
+            ChinhMenuTheoVaiTro();
 
             Load += FrmMain_Load;
             FormClosing += FrmMain_FormClosing;
@@ -103,8 +114,9 @@ namespace BCWF
                 return;
             }
 
-            BackColor = dlg.Color;
+            _mauNen = dlg.Color;
             TuyChonNguoiDung.GhiChuoi("MauNen", dlg.Color.ToArgb().ToString());
+            ApDungMauNen();
         }
 
         private void DoiPhongChu_Click(object? sender, EventArgs e)
@@ -119,18 +131,22 @@ namespace BCWF
                 return;
             }
 
-            menuStrip1.Font = dlg.Font;
+            _phongChu = dlg.Font;
             TuyChonNguoiDung.GhiChuoi("PhongChu",
                 $"{dlg.Font.Name};{dlg.Font.Size:0.##};{(int)dlg.Font.Style}");
+            ApDungPhongChu();
         }
 
         /// <summary>Khôi phục màu nền và phông chữ đã lưu trong Registry.</summary>
-        private static void KhoiPhucGiaoDien(Form form, MenuStrip menu)
+        private void KhoiPhucGiaoDien()
         {
+            _mauNen = null;
+            _phongChu = null;
+
             string? mau = TuyChonNguoiDung.DocChuoi("MauNen");
             if (int.TryParse(mau, out int argb))
             {
-                form.BackColor = Color.FromArgb(argb);
+                _mauNen = Color.FromArgb(argb);
             }
 
             string? phong = TuyChonNguoiDung.DocChuoi("PhongChu");
@@ -143,13 +159,84 @@ namespace BCWF
                 {
                     try
                     {
-                        menu.Font = new Font(phan[0], coChu, (FontStyle)int.Parse(phan[2]));
+                        _phongChu = new Font(phan[0], coChu, (FontStyle)int.Parse(phan[2]));
                     }
                     catch
                     {
                         // Font hệ thống không còn thì giữ font mặc định.
                     }
                 }
+            }
+
+            ApDungMauNen();
+            ApDungPhongChu();
+        }
+
+        private void ApDungMauNen()
+        {
+            if (!_mauNen.HasValue)
+            {
+                return;
+            }
+
+            BackColor = _mauNen.Value;
+            foreach (Control control in Controls)
+            {
+                if (control is MdiClient)
+                {
+                    control.BackColor = _mauNen.Value;
+                }
+            }
+
+            foreach (Form form in MdiChildren)
+            {
+                form.BackColor = _mauNen.Value;
+            }
+        }
+
+        private void ApDungPhongChu()
+        {
+            if (_phongChu == null)
+            {
+                return;
+            }
+
+            menuStrip1.Font = _phongChu;
+            Font = _phongChu;
+            foreach (Form form in MdiChildren)
+            {
+                ApDungPhongChuChoForm(form);
+            }
+        }
+
+        private void ApDungPhongChuChoForm(Form form)
+        {
+            if (_phongChu == null)
+            {
+                return;
+            }
+
+            form.Font = _phongChu;
+            foreach (Control control in form.Controls)
+            {
+                ApDungPhongChuChoControl(control);
+            }
+        }
+
+        private void ApDungPhongChuChoControl(Control control)
+        {
+            if (_phongChu == null)
+            {
+                return;
+            }
+
+            // Giữ cỡ chữ lớn của tiêu đề, chỉ đổi phông và cỡ chữ thông thường.
+            float coChu = control.Font.Size >= 12F ? control.Font.Size : _phongChu.Size;
+            control.Font = new Font(_phongChu.FontFamily, coChu, control.Font.Style, GraphicsUnit.Point);
+
+            foreach (Control child in control.Controls)
+            {
+                ApDungPhongChuChoControl(child);
             }
         }
 
@@ -260,6 +347,13 @@ namespace BCWF
                 MdiParent = this
             };
 
+            // Áp dụng màu nền/phông chữ hiện tại cho cả form mở sau khi đã tùy chỉnh.
+            if (_mauNen.HasValue)
+            {
+                formCon.BackColor = _mauNen.Value;
+            }
+            ApDungPhongChuChoForm(formCon);
+
             _cacFormDaMo[typeof(T)] = formCon;
             formCon.FormClosed += (s, e) => _cacFormDaMo.Remove(typeof(T));
             formCon.Show();
@@ -272,10 +366,16 @@ namespace BCWF
             Close();
         }
 
+        private void DoiMatKhau_Click(object? sender, EventArgs e)
+        {
+            using var frm = new Forms.FrmDoiMatKhau();
+            frm.ShowDialog(this);
+        }
+
         private void FrmMain_Load(object? sender, EventArgs e)
         {
             // Khôi phục màu nền/phông chữ và vị trí/kích thước đã lưu trong Registry.
-            KhoiPhucGiaoDien(this, menuStrip1);
+            KhoiPhucGiaoDien();
 
             string? daLuu = TuyChonNguoiDung.DocChuoi("ViTriForm");
             if (!string.IsNullOrWhiteSpace(daLuu))
@@ -298,7 +398,7 @@ namespace BCWF
 
         private void FrmMain_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            // Hỏi xác nhận khi người dùng tự đóng (nút X, menu Thoát, Alt+F4).
+            // Hỏi xác nhận khi người dùng tự đóng bằng nút X hoặc menu Thoát.
             if (e.CloseReason == CloseReason.UserClosing)
             {
                 DialogResult xacNhan = MessageBox.Show(
