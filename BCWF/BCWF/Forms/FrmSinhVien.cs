@@ -768,7 +768,8 @@ namespace BCWF.Forms
         {
             string goc = txtMSSV.Text;
 
-        private bool _dangChuanHoaMSSV;
+            StringBuilder chu = new StringBuilder();
+            StringBuilder so = new StringBuilder();
 
             foreach (char ch in goc)
             {
