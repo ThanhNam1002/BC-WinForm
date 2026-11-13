@@ -38,9 +38,9 @@ namespace BCWF.Forms
             colAnh = new ColumnHeader();
             pnlEdit = new Panel();
             lblMSSV = new Label();
-            txtMSSV = new TextBox();
+            txtMSSV = new BCWF.Common.TextBoxIme();
             lblHoTen = new Label();
-            txtHoTen = new TextBox();
+            txtHoTen = new BCWF.Common.TextBoxIme();
             lblNgaySinh = new Label();
             dtpNgaySinh = new DateTimePicker();
             lblGioiTinh = new Label();
@@ -414,9 +414,9 @@ namespace BCWF.Forms
         private ColumnHeader colMaLop;
         private ColumnHeader colAnh;
         private Label lblMSSV;
-        private TextBox txtMSSV;
+        private BCWF.Common.TextBoxIme txtMSSV;
         private Label lblHoTen;
-        private TextBox txtHoTen;
+        private BCWF.Common.TextBoxIme txtHoTen;
         private Label lblNgaySinh;
         private DateTimePicker dtpNgaySinh;
         private Label lblGioiTinh;
