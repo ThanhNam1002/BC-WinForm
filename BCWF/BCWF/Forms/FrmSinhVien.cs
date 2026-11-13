@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace BCWF.Forms
@@ -55,8 +56,28 @@ namespace BCWF.Forms
             txtMSSV.KeyPress += txtMSSV_KeyPress;
             txtMSSV.TextChanged += txtMSSV_TextChanged;
 
+            // Bộ gõ tiếng Việt (Unikey/VNI) gửi ký tự theo kiểu IME.
+            // Trong lúc đang soạn thì không được sửa/kiểm tra nội dung ô nhập
+            // (sửa Text lúc này sẽ huỷ vùng soạn và làm mất ký tự).
+            txtMSSV.CompositionStarted += (s, e) => _dangComposition = true;
+            txtMSSV.CompositionEnded += (s, e) =>
+            {
+                _dangComposition = false;
+                ChuanHoaMSSV();
+            };
+
+            // Chốt trạng thái khi rời ô nhập (phòng trường hợp bộ gõ không gửi
+            // thông báo kết thúc soạn).
+            txtMSSV.Leave += (s, e) =>
+            {
+                _dangComposition = false;
+                ChuanHoaMSSV();
+            };
+
             txtHoTen.KeyPress += txtHoTen_KeyPress;
             txtHoTen.TextChanged += txtHoTen_TextChanged;
+            txtHoTen.CompositionStarted += (s, e) => _dangCompositionHoTen = true;
+            txtHoTen.CompositionEnded += (s, e) => _dangCompositionHoTen = false;
         }
 
         private void FrmSinhVien_Load(object sender, EventArgs e)
@@ -693,6 +714,12 @@ namespace BCWF.Forms
             #endregion
         }
 
+        /// <summary>
+        /// Lọc ký tự khi gõ MSSV. Không kiểm tra vị trí/chữ hoa tại đây vì khi dùng
+        /// bộ gõ tiếng Việt, nội dung ô nhập trong lúc soạn chưa ổn định,
+        /// kiểm tra theo vị trí sẽ loại mất ký tự hợp lệ.
+        /// Định dạng được kiểm tra lại khi bấm Lưu.
+        /// </summary>
         private void txtMSSV_KeyPress(object? sender, KeyPressEventArgs e)
         {
             if (char.IsControl(e.KeyChar))
@@ -700,90 +727,88 @@ namespace BCWF.Forms
                 return;
             }
 
-            char c = e.KeyChar;
-            string hienTai = txtMSSV.Text;
-            int viTri = txtMSSV.SelectionStart;
-
-            // Chữ S chỉ được ở vị trí đầu.
-            if (c == 's' || c == 'S')
+            // Đang soạn với bộ gõ tiếng Việt: để bộ gõ quyết định ký tự.
+            if (_dangComposition)
             {
-                if (viTri == 0 && (hienTai.Length == 0 || txtMSSV.SelectionLength == hienTai.Length))
-                {
-                    e.KeyChar = 'S';
-                    return;
-                }
-                e.Handled = true;
                 return;
             }
 
-            // Chữ V chỉ được ngay sau S.
-            if (c == 'v' || c == 'V')
+            char c = char.ToUpperInvariant(e.KeyChar);
+            if (c == 'S' || c == 'V' || (c >= '0' && c <= '9'))
             {
-                if (viTri == 1 && hienTai.Length >= 1 && (hienTai[0] == 'S') &&
-                    (hienTai.Length == 1 || txtMSSV.SelectionLength > 0))
-                {
-                    e.KeyChar = 'V';
-                    return;
-                }
-                e.Handled = true;
                 return;
             }
 
-            // Số chỉ được nhập sau khi đã có "SV".
-            if (c >= '0' && c <= '9')
-            {
-                bool coTienToSV = hienTai.StartsWith("SV", StringComparison.OrdinalIgnoreCase) ||
-                                 (viTri >= 2 && hienTai.Length >= 2 && hienTai[0] == 'S' && hienTai[1] == 'V');
-                if (!coTienToSV)
-                {
-                    MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Handled = true;
-                    return;
-                }
-                return;
-            }
-
-            // Chặn mọi ký tự khác, kể cả chữ có dấu.
+            // Chặn mọi ký tự khác (kể cả chữ có dấu) nhưng không hiện thông báo
+            // để không gián đoạn khi người dùng đang gõ.
             e.Handled = true;
         }
 
         private bool _dangChuanHoaMSSV;
-        private bool _dangHienLoiMSSV;
+
+        /// <summary>Đang soạn văn bản bằng bộ gõ tiếng Việt hay không.</summary>
+        private bool _dangComposition;
+
+        /// <summary>Đang soạn tên sinh viên bằng bộ gõ tiếng Việt hay không.</summary>
+        private bool _dangCompositionHoTen;
 
         private void txtMSSV_TextChanged(object? sender, EventArgs e)
         {
-            if (_dangChuanHoaMSSV)
+            if (_dangChuanHoaMSSV || _dangComposition)
             {
                 return;
             }
 
-            string goc = txtMSSV.Text;
-            string sach = new string(goc.Where(ch => (ch >= '0' && ch <= '9') ||
-                                                    ch == 'S' || ch == 'V' ||
-                                                    ch == 's' || ch == 'v').ToArray())
-                .ToUpperInvariant();
+            ChuanHoaMSSV();
+        }
 
-            if (sach.Length > 0 && sach[0] >= '0' && sach[0] <= '9')
+        /// <summary>
+        /// Chuẩn hoá nội dung ô MSSV: chỉ giữ lại chữ S, V và chữ số, viết hoa,
+        /// và tự hoàn thiện tiền tố "SV" khi đã có phần chữ số
+        /// (người dùng có thể gõ "30010" hoặc "S3" và vẫn ra "SV30010"/"SV3").
+        /// </summary>
+        private void ChuanHoaMSSV()
+        {
+            string goc = txtMSSV.Text;
+
+            var chu = new StringBuilder();
+            var so = new StringBuilder();
+
+            foreach (char ch in goc)
             {
-                if (!_dangHienLoiMSSV)
+                if (ch >= '0' && ch <= '9')
                 {
-                    _dangHienLoiMSSV = true;
-                    MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    _dangHienLoiMSSV = false;
+                    so.Append(ch);
+                    continue;
                 }
 
-                _dangChuanHoaMSSV = true;
-                txtMSSV.Clear();
-                _dangChuanHoaMSSV = false;
+                if (ch is 'S' or 's' or 'V' or 'v')
+                {
+                    chu.Append(char.ToUpperInvariant(ch));
+                }
+            }
+
+            string sach = chu.ToString() + so.ToString();
+
+            // Đã có chữ số thì luôn dùng tiền tố chuẩn "SV".
+            if (so.Length > 0)
+            {
+                sach = "SV" + so.ToString();
+            }
+
+            if (string.Equals(sach, goc, StringComparison.Ordinal))
+            {
                 return;
             }
 
-            if (!string.Equals(sach, goc, StringComparison.Ordinal))
+            _dangChuanHoaMSSV = true;
+            try
             {
-                int viTri = txtMSSV.SelectionStart;
-                _dangChuanHoaMSSV = true;
                 txtMSSV.Text = sach;
-                txtMSSV.SelectionStart = Math.Min(viTri, sach.Length);
+                txtMSSV.SelectionStart = sach.Length;
+            }
+            finally
+            {
                 _dangChuanHoaMSSV = false;
             }
         }
@@ -791,6 +816,12 @@ namespace BCWF.Forms
         private void txtHoTen_KeyPress(object? sender, KeyPressEventArgs e)
         {
             if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            // Đang soạn với bộ gõ tiếng Việt: để bộ gõ quyết định ký tự.
+            if (_dangCompositionHoTen)
             {
                 return;
             }
@@ -809,6 +840,12 @@ namespace BCWF.Forms
 
         private void txtHoTen_TextChanged(object? sender, EventArgs e)
         {
+            // Đang soạn với bộ gõ tiếng Việt: không sửa lại nội dung để tránh huỷ vùng soạn.
+            if (_dangCompositionHoTen)
+            {
+                return;
+            }
+
             string goc = txtHoTen.Text;
             string sach = new string(goc.Where(ch => !char.IsDigit(ch)).ToArray());
             if (!string.Equals(sach, goc, StringComparison.Ordinal))
