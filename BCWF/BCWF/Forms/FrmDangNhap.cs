@@ -1,4 +1,5 @@
 ﻿using BCWF.Services;
+using BCWF.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,6 +34,14 @@ namespace BCWF.Forms
             btnHuy.Click += btnHuy_Click;
             MakePictureBoxCircular(pictureBox1);
             pictureBox1.SizeChanged += (s, e) => MakePictureBoxCircular(pictureBox1);
+
+            // Ghi nhớ đăng nhập: đọc tên đăng nhập đã lưu trong Registry.
+            chkGhiNho.Checked = TuyChonNguoiDung.DocBool("GhiNhoDangNhap");
+            if (chkGhiNho.Checked)
+            {
+                txtUsername.Text = TuyChonNguoiDung.DocChuoi("TenDangNhapLuu") ?? string.Empty;
+                txtPassword.Focus();
+            }
             try
             {
                 // Ảnh được copy ra thư mục Resources cạnh tệp chạy (xem BCWF.csproj).
@@ -92,6 +101,17 @@ namespace BCWF.Forms
             {
                 NguoiDungHienTai = taiKhoan;
                 _soLanSai.Remove(username);
+
+                // Lưu/ xóa ghi nhớ đăng nhập trong Registry theo tùy chọn của người dùng.
+                TuyChonNguoiDung.GhiBool("GhiNhoDangNhap", chkGhiNho.Checked);
+                if (chkGhiNho.Checked)
+                {
+                    TuyChonNguoiDung.GhiChuoi("TenDangNhapLuu", username);
+                }
+                else
+                {
+                    TuyChonNguoiDung.Xoa("TenDangNhapLuu");
+                }
 
                 MessageBox.Show("Đăng nhập thành công", "Thông báo",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);

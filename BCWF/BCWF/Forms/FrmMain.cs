@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using BCWF.Common;
 
 namespace BCWF
 {
@@ -38,6 +40,9 @@ namespace BCWF
 
             // Phân quyền: từng vai trò nhìn thấy menu khác nhau.
             ChinhMenuTheoVaiTro();
+
+            Load += FrmMain_Load;
+            FormClosing += FrmMain_FormClosing;
         }
 
         /// <summary>
@@ -88,6 +93,36 @@ namespace BCWF
         private void thoatMenuItem_Click(object? sender, EventArgs e)
         {
             Close();
+        }
+
+        private void FrmMain_Load(object? sender, EventArgs e)
+        {
+            // Khôi phục vị trí/kích thước cửa sổ đã lưu trong Registry.
+            string? daLuu = TuyChonNguoiDung.DocChuoi("ViTriForm");
+            if (!string.IsNullOrWhiteSpace(daLuu))
+            {
+                string[] phan = daLuu.Split(';');
+                if (phan.Length >= 4
+                    && int.TryParse(phan[0], out int x)
+                    && int.TryParse(phan[1], out int y)
+                    && int.TryParse(phan[2], out int rong)
+                    && int.TryParse(phan[3], out int cao)
+                    && rong > 200 && cao > 200)
+                {
+                    WindowState = FormWindowState.Normal;
+                    StartPosition = FormStartPosition.Manual;
+                    Location = new Point(x, y);
+                    Size = new Size(rong, cao);
+                }
+            }
+        }
+
+        private void FrmMain_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            // Lưu vị trí/kích thước cửa sổ vào Registry.
+            Rectangle phanVung = RestoreBounds;
+            TuyChonNguoiDung.GhiChuoi("ViTriForm",
+                $"{phanVung.Left};{phanVung.Top};{phanVung.Width};{phanVung.Height}");
         }
 
         #endregion

@@ -105,6 +105,16 @@
             btnDangNhap.UseVisualStyleBackColor = false;
             btnDangNhap.Click += btnDangNhap_Click;
             // 
+            // chkGhiNho
+            // 
+            chkGhiNho.AutoSize = true;
+            chkGhiNho.Location = new Point(169, 190);
+            chkGhiNho.Name = "chkGhiNho";
+            chkGhiNho.Size = new Size(160, 24);
+            chkGhiNho.TabIndex = 10;
+            chkGhiNho.Text = "Ghi nhớ đăng nhập";
+            chkGhiNho.UseVisualStyleBackColor = true;
+            // 
             // btnHuy
             // 
             btnHuy.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -154,6 +164,7 @@
             Controls.Add(label1);
             Controls.Add(pictureBox1);
             Controls.Add(lnkDoiMatKhau);
+            Controls.Add(chkGhiNho);
             Controls.Add(btnHuy);
             Controls.Add(btnDangNhap);
             Controls.Add(txtPassword);
@@ -176,6 +187,7 @@
         #endregion
 
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.CheckBox chkGhiNho;
         private System.Windows.Forms.Label lblUsername;
         private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.Label lblPassword;
