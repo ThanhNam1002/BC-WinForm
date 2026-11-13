@@ -298,6 +298,20 @@ namespace BCWF
 
         private void FrmMain_FormClosing(object? sender, FormClosingEventArgs e)
         {
+            // Hỏi xác nhận khi người dùng tự đóng (nút X, menu Thoát, Alt+F4).
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                DialogResult xacNhan = MessageBox.Show(
+                    "Bạn có chắc muốn thoát chương trình?",
+                    "Xác nhận thoát", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2);
+                if (xacNhan != DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             // Lưu vị trí/kích thước cửa sổ vào Registry.
             Rectangle phanVung = RestoreBounds;
             TuyChonNguoiDung.GhiChuoi("ViTriForm",
