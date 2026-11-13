@@ -146,7 +146,7 @@ namespace BCWF.Services
 
         /// <summary>
         /// Nội dung cột "Ghi chú" của bảng điểm:
-        /// rớt môn / chưa đăng ký / "Đạt" khi ĐTB tích lũu đạt yêu cầu / "Chưa đạt".
+        /// rớt môn / chưa đăng ký / mức cảnh báo học vụ / "Đạt" khi không bị cảnh báo.
         /// </summary>
         public string LayGhiChu(DangKy? dangKy, double dtbTichLuy, bool coDiemTichLuy)
         {
@@ -165,28 +165,175 @@ namespace BCWF.Services
                 return string.Empty;
             }
 
-            return dtbTichLuy >= AppConfig.DiemDatYeuCau ? "Đạt" : "Chưa đạt";
+            string muc = XepMucCanhBao(dtbTichLuy);
+            return string.IsNullOrEmpty(muc) ? "Đạt" : muc;
         }
 
         #endregion
 
+        
+
+        
+
         #region Cảnh báo học vụ
 
-        /// <summary>Nâng cao: danh sách sinh viên bị cảnh báo học vụ (ĐTB tích lũy dưới ngưỡng trong App.config).</summary>
-        public List<SinhVien> LayDanhSachCanhBao()
+        /// <summary>Mức cảnh báo học vụ mức 1: ĐTB tích lũy dưới ngưỡng DiemCanhBao.</summary>
+        public const string MucCanhBao = "Cảnh báo";
+
+        /// <summary>Mức cảnh báo học vụ mức 2: ĐTB tích lũy dưới ngưỡng DiemCanhBaoNang.</summary>
+        public const string MucCanhBaoNang = "Cảnh báo nặng";
+
+        /// <summary>Mức cảnh báo học vụ mức 3: ĐTB tích lũy dưới ngưỡng DiemBuocNghi.</summary>
+        public const string MucBuocNghi = "Buộc nghỉ học";
+
+        /// <summary>
+        /// Xếp mức cảnh báo học vụ theo điểm trung bình tích lũy.
+        /// Trả về chuỗi rỗng nếu sinh viên không bị cảnh báo.
+        /// </summary>
+        public string XepMucCanhBao(double dtbTichLuy)
         {
-            double nguong = AppConfig.DiemCanhBao;
+            if (dtbTichLuy < AppConfig.DiemBuocNghi)
+            {
+                return MucBuocNghi;
+            }
 
-            // Chỉ xét sinh viên đã có ít nhất một môn nhập đủ 3 đầu điểm.
-            // Sinh viên chưa có điểm (hoặc mới nhập một phần) chưa đủ căn cứ để cảnh báo.
-            var coDiem = new HashSet<string>(
-                _store.DangKys.Where(dk => dk.DaNhapDiem).Select(dk => dk.MSSV),
-                StringComparer.OrdinalIgnoreCase);
+            if (dtbTichLuy < AppConfig.DiemCanhBaoNang)
+            {
+                return MucCanhBaoNang;
+            }
 
-            return _store.SinhViens
-                .Where(sv => coDiem.Contains(sv.MSSV)
-                          && TinhDiemTrungBinhTichLuy(sv.MSSV) < nguong)
-                .OrderBy(sv => sv.MSSV)
+            if (dtbTichLuy < AppConfig.DiemCanhBao)
+            {
+                return MucCanhBao;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>Thứ tự hiển thị của các mức cảnh báo (mức nặng hơn lên trước).</summary>
+        private static int ThuTuMucCanhBao(string muc)
+        {
+            if (muc == MucBuocNghi)
+            {
+                return 0;
+            }
+
+            if (muc == MucCanhBaoNang)
+            {
+                return 1;
+            }
+
+            return 2;
+        }
+
+        /// <summary>
+        /// Điểm trung bình của sinh viên trong một học kỳ
+        /// (tính theo tín chỉ các môn đã có điểm trong học kỳ đó).
+        /// </summary>
+        public double TinhDiemTrungBinhHocKy(string mssv, string hocKy)
+        {
+            if (string.IsNullOrWhiteSpace(mssv) || string.IsNullOrWhiteSpace(hocKy))
+            {
+                return 0;
+            }
+
+            double tongDiem = 0;
+            int tongTinChi = 0;
+
+            foreach (DangKy dangKy in _store.DangKys.Where(dk =>
+                string.Equals(dk.MSSV, mssv, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(dk.HocKy, hocKy, StringComparison.OrdinalIgnoreCase)))
+            {
+                double? tongKet = TinhDiemTongKet(dangKy);
+                if (!tongKet.HasValue)
+                {
+                    continue;
+                }
+
+                int soTC = LaySoTinChi(dangKy.MaMon);
+                tongDiem += tongKet.Value * soTC;
+                tongTinChi += soTC;
+            }
+
+            if (tongTinChi == 0)
+            {
+                return 0;
+            }
+
+            return Math.Round(tongDiem / tongTinChi, 2, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// Danh sách sinh viên bị cảnh báo học vụ, kèm mức cảnh báo, số môn rớt và danh sách môn rớt.
+        /// </summary>
+        /// <param name="maLop">Chỉ lấy sinh viên của lớp này (null = tất cả).</param>
+        /// <param name="hocKy">Chỉ thống kê môn rớt trong học kỳ này (null = tất cả học kỳ).</param>
+        public List<ThongTinCanhBao> LayDanhSachCanhBao(string? maLop = null, string? hocKy = null)
+        {
+            var ketQua = new List<ThongTinCanhBao>();
+
+            foreach (SinhVien sv in _store.SinhViens)
+            {
+                if (!string.IsNullOrWhiteSpace(maLop) &&
+                    !string.Equals(sv.MaLop, maLop, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                // Chỉ xét sinh viên đã có ít nhất một môn nhập đủ 3 đầu điểm.
+                // Sinh viên chưa có điểm thì chưa đủ căn cứ để cảnh báo.
+                if (!CoDiemTichLuy(sv.MSSV))
+                {
+                    continue;
+                }
+
+                double dtb = TinhDiemTrungBinhTichLuy(sv.MSSV);
+                string muc = XepMucCanhBao(dtb);
+                if (string.IsNullOrEmpty(muc))
+                {
+                    continue;
+                }
+
+                var thongTin = new ThongTinCanhBao
+                {
+                    MSSV = sv.MSSV,
+                    HoTen = sv.HoTen,
+                    MaLop = sv.MaLop,
+                    DtbTichLuy = dtb,
+                    MucCanhBao = muc,
+                    DtbHocKy = string.IsNullOrWhiteSpace(hocKy)
+                        ? null
+                        : TinhDiemTrungBinhHocKy(sv.MSSV, hocKy)
+                };
+
+                foreach (DangKy dangKy in _store.DangKys.Where(dk =>
+                    string.Equals(dk.MSSV, sv.MSSV, StringComparison.OrdinalIgnoreCase) && dk.DaNhapDiem))
+                {
+                    if (!string.IsNullOrWhiteSpace(hocKy) &&
+                        !string.Equals(dangKy.HocKy, hocKy, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    double? tongKet = TinhDiemTongKet(dangKy);
+                    if (!tongKet.HasValue || tongKet.Value >= DiemRot)
+                    {
+                        continue;
+                    }
+
+                    thongTin.SoMonRot++;
+                    thongTin.TongTinChiRot += LaySoTinChi(dangKy.MaMon);
+                    thongTin.DanhSachMonRot.Add($"{LayTenMon(dangKy.MaMon)} ({tongKet.Value:0.##})");
+                }
+
+                ketQua.Add(thongTin);
+            }
+
+            // Mức cảnh báo nặng hơn lên trước, cùng mức thì ĐTB thấp hơn lên trước.
+            return ketQua
+                .OrderBy(t => ThuTuMucCanhBao(t.MucCanhBao))
+                .ThenBy(t => t.DtbTichLuy)
+                .ThenBy(t => t.MSSV, StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
 
