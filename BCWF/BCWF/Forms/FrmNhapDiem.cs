@@ -407,13 +407,13 @@ namespace BCWF.Forms
             item.SubItems[CotXepLoai].Text = tongKet.HasValue ? _diemService.XepLoai(tongKet.Value) : string.Empty;
 
             double dtb = _diemService.TinhDiemTrungBinhTichLuy(dong.MSSV);
-            bool coDiemTichLuy = _store.DangKys.Any(dk =>
-                string.Equals(dk.MSSV, dong.MSSV, StringComparison.OrdinalIgnoreCase) && dk.DaNhapDiem);
+            bool coDiemTichLuy = _diemService.CoDiemTichLuy(dong.MSSV);
             item.SubItems[CotDtbTichLuy].Text = coDiemTichLuy
                 ? dtb.ToString("0.##", CultureInfo.InvariantCulture)
                 : string.Empty;
 
-            item.SubItems[CotGhiChu].Text = rot ? "Rớt môn" : (dong.DangKy == null ? "Chưa đăng ký" : string.Empty);
+            // Ghi chú: rớt môn / chưa đăng ký / "Đạt" nếu ĐTB tích lũu đạt yêu cầu.
+            item.SubItems[CotGhiChu].Text = _diemService.LayGhiChu(dong.DangKy, dtb, coDiemTichLuy);
 
             // Tô đỏ dòng khi môn bị rớt.
             item.ForeColor = rot ? Color.Red : SystemColors.WindowText;
