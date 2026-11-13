@@ -17,9 +17,6 @@ namespace BCWF
         /// <summary>Màu nền người dùng đã chọn; null nghĩa là dùng giao diện mặc định.</summary>
         private Color? _mauNen;
 
-        /// <summary>Phông chữ người dùng đã chọn; null nghĩa là dùng phông mặc định.</summary>
-        private Font? _phongChu;
-
         public FrmMain()
         {
             InitializeComponent();
@@ -41,14 +38,11 @@ namespace BCWF
             var doiMatKhauMenuItem = new ToolStripMenuItem("Đổi mật khẩu...");
             doiMatKhauMenuItem.Click += DoiMatKhau_Click;
 
-            // Menu tùy chỉnh giao diện (ColorDialog / FontDialog, lưu lựa chọn vào Registry).
+            // Menu tùy chỉnh giao diện (ColorDialog, lưu lựa chọn màu vào Registry).
             var tuyChinhMenuItem = new ToolStripMenuItem("Tùy chỉnh giao diện");
             var doiMauMenuItem = new ToolStripMenuItem("Đổi màu nền...");
             doiMauMenuItem.Click += DoiMauNen_Click;
-            var doiFontMenuItem = new ToolStripMenuItem("Đổi phông chữ...");
-            doiFontMenuItem.Click += DoiPhongChu_Click;
             tuyChinhMenuItem.DropDownItems.Add(doiMauMenuItem);
-            tuyChinhMenuItem.DropDownItems.Add(doiFontMenuItem);
 
             heThongMenu.DropDownItems.Clear();
             heThongMenu.DropDownItems.Add(trangChuMenuItem);
@@ -119,29 +113,12 @@ namespace BCWF
             ApDungMauNen();
         }
 
-        private void DoiPhongChu_Click(object? sender, EventArgs e)
-        {
-            using FontDialog dlg = new FontDialog
-            {
-                Font = menuStrip1.Font
-            };
 
-            if (dlg.ShowDialog(this) != DialogResult.OK)
-            {
-                return;
-            }
 
-            _phongChu = dlg.Font;
-            TuyChonNguoiDung.GhiChuoi("PhongChu",
-                $"{dlg.Font.Name};{dlg.Font.Size:0.##};{(int)dlg.Font.Style}");
-            ApDungPhongChu();
-        }
-
-        /// <summary>Khôi phục màu nền và phông chữ đã lưu trong Registry.</summary>
+        /// <summary>Khôi phục màu nền đã lưu trong Registry.</summary>
         private void KhoiPhucGiaoDien()
         {
             _mauNen = null;
-            _phongChu = null;
 
             string? mau = TuyChonNguoiDung.DocChuoi("MauNen");
             if (int.TryParse(mau, out int argb))
@@ -149,27 +126,7 @@ namespace BCWF
                 _mauNen = Color.FromArgb(argb);
             }
 
-            string? phong = TuyChonNguoiDung.DocChuoi("PhongChu");
-            if (!string.IsNullOrWhiteSpace(phong))
-            {
-                string[] phan = phong.Split(';');
-                if (phan.Length >= 3
-                    && float.TryParse(phan[1], System.Globalization.NumberStyles.Float,
-                        System.Globalization.CultureInfo.InvariantCulture, out float coChu))
-                {
-                    try
-                    {
-                        _phongChu = new Font(phan[0], coChu, (FontStyle)int.Parse(phan[2]));
-                    }
-                    catch
-                    {
-                        // Font hệ thống không còn thì giữ font mặc định.
-                    }
-                }
-            }
-
             ApDungMauNen();
-            ApDungPhongChu();
         }
 
         private void ApDungMauNen()
@@ -191,52 +148,6 @@ namespace BCWF
             foreach (Form form in MdiChildren)
             {
                 form.BackColor = _mauNen.Value;
-            }
-        }
-
-        private void ApDungPhongChu()
-        {
-            if (_phongChu == null)
-            {
-                return;
-            }
-
-            menuStrip1.Font = _phongChu;
-            Font = _phongChu;
-            foreach (Form form in MdiChildren)
-            {
-                ApDungPhongChuChoForm(form);
-            }
-        }
-
-        private void ApDungPhongChuChoForm(Form form)
-        {
-            if (_phongChu == null)
-            {
-                return;
-            }
-
-            form.Font = _phongChu;
-            foreach (Control control in form.Controls)
-            {
-                ApDungPhongChuChoControl(control);
-            }
-        }
-
-        private void ApDungPhongChuChoControl(Control control)
-        {
-            if (_phongChu == null)
-            {
-                return;
-            }
-
-            // Giữ cỡ chữ lớn của tiêu đề, chỉ đổi phông và cỡ chữ thông thường.
-            float coChu = control.Font.Size >= 12F ? control.Font.Size : _phongChu.Size;
-            control.Font = new Font(_phongChu.FontFamily, coChu, control.Font.Style, GraphicsUnit.Point);
-
-            foreach (Control child in control.Controls)
-            {
-                ApDungPhongChuChoControl(child);
             }
         }
 
@@ -347,12 +258,11 @@ namespace BCWF
                 MdiParent = this
             };
 
-            // Áp dụng màu nền/phông chữ hiện tại cho cả form mở sau khi đã tùy chỉnh.
+            // Áp dụng màu nền hiện tại cho form mở sau khi đã tùy chỉnh.
             if (_mauNen.HasValue)
             {
                 formCon.BackColor = _mauNen.Value;
             }
-            ApDungPhongChuChoForm(formCon);
 
             _cacFormDaMo[typeof(T)] = formCon;
             formCon.FormClosed += (s, e) => _cacFormDaMo.Remove(typeof(T));
@@ -374,7 +284,7 @@ namespace BCWF
 
         private void FrmMain_Load(object? sender, EventArgs e)
         {
-            // Khôi phục màu nền/phông chữ và vị trí/kích thước đã lưu trong Registry.
+            // Khôi phục màu nền và vị trí/kích thước đã lưu trong Registry.
             KhoiPhucGiaoDien();
 
             string? daLuu = TuyChonNguoiDung.DocChuoi("ViTriForm");
