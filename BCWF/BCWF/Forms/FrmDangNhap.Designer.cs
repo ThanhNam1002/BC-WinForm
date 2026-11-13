@@ -38,6 +38,7 @@
             lnkDoiMatKhau = new LinkLabel();
             pictureBox1 = new PictureBox();
             label1 = new Label();
+            chkGhiNho = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -108,7 +109,7 @@
             // chkGhiNho
             // 
             chkGhiNho.AutoSize = true;
-            chkGhiNho.Location = new Point(169, 190);
+            chkGhiNho.Location = new Point(26, 190);
             chkGhiNho.Name = "chkGhiNho";
             chkGhiNho.Size = new Size(160, 24);
             chkGhiNho.TabIndex = 10;
