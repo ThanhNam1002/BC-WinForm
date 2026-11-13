@@ -153,7 +153,10 @@ namespace BCWF.Forms
             ThemNut(flowLoi, "SV1 - Sinh viên & Lớp", () => MoForm<FrmSinhVien>());
             ThemNut(flowLoi, "SV2 - Đăng ký học phần", () => MoForm<FrmDangKy>());
             ThemNut(flowLoi, "SV3 - Nhập điểm & Bảng điểm", () => MoForm<FrmNhapDiem>());
-            ThemNut(flowLoi, "Cảnh báo học vụ", () => MoForm<FrmCanhBaoHocVu>());
+            if (FrmMain.LaQuanTri)
+            {
+                ThemNut(flowLoi, "Cảnh báo học vụ", () => MoForm<FrmCanhBaoHocVu>());
+            }
             ThemNut(flowLoi, "Đổi mật khẩu", MoDoiMatKhau);
             ThemNut(flowLoi, "Đóng tất cả cửa sổ", DongTatCa);
             grpLoi.Controls.Add(flowLoi);

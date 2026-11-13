@@ -17,6 +17,15 @@ namespace BCWF.Forms
         /// <summary>Tài khoản đang đăng nhập (để trang chủ/trang cá nhân hiển thị thông tin).</summary>
         public static Models.User? NguoiDungHienTai { get; set; }
 
+        /// <summary>Số lần nhập sai tối đa cho phép trước khi khóa tài khoản.</summary>
+        private const int GioiHanSai = 3;
+
+        /// <summary>Số lần sai liên tiếp theo từng tài khoản (chỉ lưu trong phiên làm việc).</summary>
+        private static readonly Dictionary<string, int> _soLanSai = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Tài khoản đã nhập sai quá giới hạn, bị khóa đến khi khởi động lại chương trình.</summary>
+        private static readonly HashSet<string> _taiKhoanBiKhoa = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         public FrmDangNhap()
         {
             InitializeComponent();
@@ -66,6 +75,15 @@ namespace BCWF.Forms
                 return;
             }
 
+            // Tài khoản đã bị khóa sau 3 lần sai thì không cho đăng nhập nữa.
+            if (_taiKhoanBiKhoa.Contains(username))
+            {
+                MessageBox.Show($"Tài khoản '{username}' đã bị khóa do nhập sai {GioiHanSai} lần liên tiếp.\n"
+                    + "Vui lòng liên hệ quản trị viên.", "Tài khoản bị khóa",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             //Kiểm tra đăng nhâp theo tài khoản trong users.txt
             Models.User? taiKhoan = _store.Users.FirstOrDefault(u =>
                 string.Equals(u.TenDangNhap, username, StringComparison.OrdinalIgnoreCase));
@@ -73,6 +91,8 @@ namespace BCWF.Forms
             if (taiKhoan != null && string.Equals(taiKhoan.MatKhau, password, StringComparison.Ordinal))
             {
                 NguoiDungHienTai = taiKhoan;
+                _soLanSai.Remove(username);
+
                 MessageBox.Show("Đăng nhập thành công", "Thông báo",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
@@ -80,8 +100,24 @@ namespace BCWF.Forms
             }
             else
             {
-                MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.","Thông báo",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Đếm số lần sai liên tiếp; đủ 3 lần thì khóa tài khoản.
+                _soLanSai.TryGetValue(username, out int soLanSai);
+                soLanSai++;
+                _soLanSai[username] = soLanSai;
+
+                if (soLanSai >= GioiHanSai)
+                {
+                    _taiKhoanBiKhoa.Add(username);
+                    MessageBox.Show($"Bạn đã nhập sai {GioiHanSai} lần liên tiếp.\n"
+                        + $"Tài khoản '{username}' bị khóa. Vui lòng liên hệ quản trị viên.",
+                        "Tài khoản bị khóa", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show($"Sai tên đăng nhập hoặc mật khẩu.\n"
+                        + $"Bạn còn {GioiHanSai - soLanSai} lần thử trước khi tài khoản bị khóa.",
+                        "Đăng nhập thất bại", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

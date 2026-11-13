@@ -35,6 +35,26 @@ namespace BCWF
             trangChuMenuItem.Click += (s, e) => MoFormCon<Forms.FrmTrangChu>();
             heThongMenu.DropDownItems.Insert(0, trangChuMenuItem);
             heThongMenu.DropDownItems.Insert(1, new ToolStripSeparator());
+
+            // Phân quyền: từng vai trò nhìn thấy menu khác nhau.
+            ChinhMenuTheoVaiTro();
+        }
+
+        /// <summary>
+        /// Chỉ quản trị viên (Admin) thấy menu Báo cáo (cảnh báo học vụ) và các chức năng hệ thống;
+        /// nhân viên/Giáo vụ chỉ thấy các chức năng nghiệp vụ.
+        /// </summary>
+        public static bool LaQuanTri => string.Equals(
+            Forms.FrmDangNhap.NguoiDungHienTai?.VaiTro,
+            "Admin",
+            StringComparison.OrdinalIgnoreCase);
+
+        private void ChinhMenuTheoVaiTro()
+        {
+            if (!LaQuanTri)
+            {
+                baoCaoMenu.Visible = false;
+            }
         }
 
         /// <summary>
