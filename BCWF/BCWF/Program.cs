@@ -17,6 +17,14 @@ namespace BCWF
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
+            // Ghi lỗi ngoài dự đoán của giao diện vào log.txt thay vì để chương trình dừng im lặng.
+            Application.ThreadException += (s, e) =>
+            {
+                FileHelpers.GhiLog("Lỗi giao diện: " + e.Exception.Message + " | " + e.Exception.StackTrace);
+                MessageBox.Show($"Đã xảy ra lỗi: {e.Exception.Message}", "Lỗi",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            };
+
             try
             {
                 // Nạp toàn bộ dữ liệu trong thư mục Data vào bộ nhớ dùng chung.
@@ -24,6 +32,7 @@ namespace BCWF
             }
             catch (Exception loi)
             {
+                FileHelpers.GhiLog("Không nạp được dữ liệu khi khởi động: " + loi.Message);
                 MessageBox.Show($"Không nạp được dữ liệu: {loi.Message}",
                     "Lỗi dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

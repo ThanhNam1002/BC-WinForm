@@ -38,6 +38,7 @@ namespace BCWF.Forms
             }
             catch (Exception ex)
             {
+                FileHelpers.GhiLog("Lỗi tải ảnh đăng nhập: " + ex.Message);
                 MessageBox.Show("Lỗi khi tải hình ảnh: " + ex.Message, "Lỗi",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
