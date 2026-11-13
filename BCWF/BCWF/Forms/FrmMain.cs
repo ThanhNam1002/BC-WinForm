@@ -41,6 +41,16 @@ namespace BCWF
             // Phân quyền: từng vai trò nhìn thấy menu khác nhau.
             ChinhMenuTheoVaiTro();
 
+            // Menu tùy chỉnh giao diện (ColorDialog / FontDialog, lưu lựa chọn vào Registry).
+            var tuyChinhMenuItem = new ToolStripMenuItem("Tùy chỉnh giao diện");
+            var doiMauMenuItem = new ToolStripMenuItem("Đổi màu nền...");
+            doiMauMenuItem.Click += DoiMauNen_Click;
+            var doiFontMenuItem = new ToolStripMenuItem("Đổi phông chữ...");
+            doiFontMenuItem.Click += DoiPhongChu_Click;
+            tuyChinhMenuItem.DropDownItems.Add(doiMauMenuItem);
+            tuyChinhMenuItem.DropDownItems.Add(doiFontMenuItem);
+            heThongMenu.DropDownItems.Insert(2, tuyChinhMenuItem);
+
             Load += FrmMain_Load;
             FormClosing += FrmMain_FormClosing;
         }
@@ -61,6 +71,73 @@ namespace BCWF
                 baoCaoMenu.Visible = false;
             }
         }
+
+        #region Tùy chỉnh giao diện
+
+        private void DoiMauNen_Click(object? sender, EventArgs e)
+        {
+            using ColorDialog dlg = new ColorDialog
+            {
+                FullOpen = true,
+                Color = BackColor
+            };
+
+            if (dlg.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            BackColor = dlg.Color;
+            TuyChonNguoiDung.GhiChuoi("MauNen", dlg.Color.ToArgb().ToString());
+        }
+
+        private void DoiPhongChu_Click(object? sender, EventArgs e)
+        {
+            using FontDialog dlg = new FontDialog
+            {
+                Font = menuStrip1.Font
+            };
+
+            if (dlg.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            menuStrip1.Font = dlg.Font;
+            TuyChonNguoiDung.GhiChuoi("PhongChu",
+                $"{dlg.Font.Name};{dlg.Font.Size:0.##};{(int)dlg.Font.Style}");
+        }
+
+        /// <summary>Khôi phục màu nền và phông chữ đã lưu trong Registry.</summary>
+        private static void KhoiPhucGiaoDien(Form form, MenuStrip menu)
+        {
+            string? mau = TuyChonNguoiDung.DocChuoi("MauNen");
+            if (int.TryParse(mau, out int argb))
+            {
+                form.BackColor = Color.FromArgb(argb);
+            }
+
+            string? phong = TuyChonNguoiDung.DocChuoi("PhongChu");
+            if (!string.IsNullOrWhiteSpace(phong))
+            {
+                string[] phan = phong.Split(';');
+                if (phan.Length >= 3
+                    && float.TryParse(phan[1], System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out float coChu))
+                {
+                    try
+                    {
+                        menu.Font = new Font(phan[0], coChu, (FontStyle)int.Parse(phan[2]));
+                    }
+                    catch
+                    {
+                        // Font hệ thống không còn thì giữ font mặc định.
+                    }
+                }
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Mở form chức năng như một cửa sổ MDI con. Mỗi form chỉ tạo một lần;
@@ -97,7 +174,9 @@ namespace BCWF
 
         private void FrmMain_Load(object? sender, EventArgs e)
         {
-            // Khôi phục vị trí/kích thước cửa sổ đã lưu trong Registry.
+            // Khôi phục màu nền/phông chữ và vị trí/kích thước đã lưu trong Registry.
+            KhoiPhucGiaoDien(this, menuStrip1);
+
             string? daLuu = TuyChonNguoiDung.DocChuoi("ViTriForm");
             if (!string.IsNullOrWhiteSpace(daLuu))
             {
