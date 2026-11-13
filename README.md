@@ -108,14 +108,16 @@ Nhập sai 3 lần liên tiếp sẽ khóa tài khoản trong phiên làm việc
 - Chọn lớp, môn, học kỳ để nạp bảng điểm; đổi môn/học kỳ tự nạp lại bảng điểm tương ứng; sửa trực tiếp điểm QT/GK/CK ngay trên dòng ListView đang chọn.
 - Điểm tổng kết = 30% quá trình + 30% giữa kỳ + 40% cuối kỳ; xếp loại A/B/C/D/F.
 - Tô đỏ môn rớt (tổng kết < 4), hiển thị ĐTB tích lũy theo tín chỉ.
-- Cột `Ghi chú`: `Rớt môn` (ưu tiên cao nhất), `Chưa đăng ký`, `Đạt` khi ĐTB tích lũy ≥ ngưỡng `DiemDatYeuCau` trong `App.config` (mặc định 2.0), `Chưa đạt` khi dưới ngưỡng, trống nếu sinh viên chưa có điểm tích lũy.
+- Cột `Ghi chú`: `Rớt môn` (ưu tiên cao nhất), `Chưa đăng ký`, mức cảnh báo học vụ (`Cảnh báo` / `Cảnh báo nặng` / `Buộc nghỉ học`) nếu ĐTB tích lũu dưới ngưỡng, `Đạt` nếu không bị cảnh báo, trống nếu sinh viên chưa có điểm tích lũy.
 - Xem bảng điểm cá nhân, xuất bảng điểm lớp và bảng điểm cá nhân ra CSV (`SaveFileDialog`).
 
 ### Chức năng nâng cao
 
 - Môn tiên quyết: chưa đạt môn trước thì không cho đăng ký (`DangKyService.KiemTraTienQuyet`).
 - Kiểm tra trùng lịch học theo thứ/tiết từ `Data/lichhoc.txt` (`DangKyService.KiemTraTrungLich`).
-- Danh sách sinh viên bị cảnh báo học vụ theo ngưỡng `DiemCanhBao` trong `App.config`, xuất CSV.
+- Cảnh báo học vụ (`FrmCanhBaoHocVu`): danh sách sinh viên có ĐTB tích lũy dưới ngưỡng, chia 3 mức theo `App.config`
+  (`DiemCanhBao` = 3.0, `DiemCanhBaoNang` = 2.0, `DiemBuocNghi` = 1.5) → *Cảnh báo* / *Cảnh báo nặng* / *Buộc nghỉ học*;
+  có bộ lọc theo lớp, học kỳ, tìm kiếm theo MSSV/tên, hiển thị số môn rớt và tín chỉ rớt, nhấp đúp để xem bảng điểm cá nhân, xuất CSV.
 
 ## Định dạng tệp dữ liệu
 

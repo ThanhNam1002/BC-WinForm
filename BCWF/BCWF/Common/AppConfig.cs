@@ -29,11 +29,14 @@ namespace BCWF.Common
         /// <summary>Học kỳ đang thao tác mặc định.</summary>
         public static string HocKyHienTai => LayChuoi("HocKyHienTai", "HK1") ?? "HK1";
 
-        /// <summary>Ngưỡng điểm trung bình tích lũy bị cảnh báo học vụ.</summary>
-        public static double DiemCanhBao => LaySoThuc("DiemCanhBao", 1.0);
+        /// <summary>Ngưỡng điểm trung bình tích lũy bị cảnh báo học vụ (mức 1).</summary>
+        public static double DiemCanhBao => LaySoThuc("DiemCanhBao", 3.0);
 
-        /// <summary>Điểm trung bình tích lũy tối thiểu để được xếp loại "Đạt" ở cột Ghi chú.</summary>
-        public static double DiemDatYeuCau => LaySoThuc("DiemDatYeuCau", 2.0);
+        /// <summary>Ngưỡng điểm trung bình tích lũy bị cảnh báo nặng (mức 2).</summary>
+        public static double DiemCanhBaoNang => LaySoThuc("DiemCanhBaoNang", 2.0);
+
+        /// <summary>Ngưỡng điểm trung bình tích lũy bị buộc nghỉ học (mức 3).</summary>
+        public static double DiemBuocNghi => LaySoThuc("DiemBuocNghi", 1.5);
 
         /// <summary>Đọc một khóa cấu hình bất kỳ, trả về null nếu không có.</summary>
         public static string? LayChuoi(string khoa, string? macDinh = null)

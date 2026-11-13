@@ -237,10 +237,9 @@ namespace BCWF.Forms
             // Dùng chung cách tính với form Cảnh báo học vụ để số liệu luôn khớp nhau.
             var dsCanhBao = _diemService.LayDanhSachCanhBao();
             int soSvCanhBao = dsCanhBao.Count;
-            foreach (SinhVien sv in dsCanhBao)
+            foreach (ThongTinCanhBao tt in dsCanhBao)
             {
-                double tb = _diemService.TinhDiemTrungBinhTichLuy(sv.MSSV);
-                nhacViec.Add($"⚠ {sv.MSSV} {sv.HoTen}: ĐTB {tb:0.00} < {AppConfig.DiemCanhBao:0.0}");
+                nhacViec.Add($"⚠ {tt.MSSV} {tt.HoTen}: ĐTB {tt.DtbTichLuy:0.00} ({tt.MucCanhBao})");
             }
             foreach (var sv in _store.SinhViens.Where(s => !string.IsNullOrWhiteSpace(s.Anh) &&
                 !System.IO.File.Exists(_store.LayDuongDanAnh(s.Anh))).Take(5))
