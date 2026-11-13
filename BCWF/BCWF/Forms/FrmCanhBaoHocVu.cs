@@ -1,5 +1,10 @@
+using BCWF.Common;
+using BCWF.Models;
 using BCWF.Services;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace BCWF.Forms
@@ -20,17 +25,107 @@ namespace BCWF.Forms
 
         private void FrmCanhBaoHocVu_Load(object sender, EventArgs e)
         {
-            // TODO (nâng cao): lấy _diemService.LayDanhSachCanhBao() và đổ lên lvCanhBao.
+            NapDanhSach();
+        }
+
+        /// <summary>Đổ danh sách sinh viên bị cảnh báo lên ListView.</summary>
+        private void NapDanhSach()
+        {
+            lvCanhBao.BeginUpdate();
+            lvCanhBao.Items.Clear();
+
+            // Chỉ tính sinh viên đã có ít nhất một môn có điểm (chưa có điểm thì chưa đánh giá được).
+            var coDiem = new HashSet<string>(
+                _store.DangKys.Where(dk => dk.DiemQT.HasValue || dk.DiemGK.HasValue || dk.DiemCK.HasValue)
+                    .Select(dk => dk.MSSV),
+                StringComparer.OrdinalIgnoreCase);
+
+            double nguong = AppConfig.DiemCanhBao;
+
+            foreach (SinhVien sv in _diemService.LayDanhSachCanhBao())
+            {
+                if (!coDiem.Contains(sv.MSSV))
+                {
+                    continue;
+                }
+
+                double dtb = _diemService.TinhDiemTrungBinhTichLuy(sv.MSSV);
+
+                var item = new ListViewItem(sv.MSSV)
+                {
+                    Tag = sv
+                };
+                item.SubItems.Add(sv.HoTen);
+                item.SubItems.Add(sv.MaLop);
+                item.SubItems.Add(dtb.ToString("0.##", CultureInfo.InvariantCulture));
+                item.SubItems.Add($"ĐTB dưới ngưỡng {nguong:0.0}");
+                item.ForeColor = System.Drawing.Color.Red;
+                lvCanhBao.Items.Add(item);
+            }
+            lvCanhBao.EndUpdate();
+
+            lblTongHop.Text = $"Số sinh viên bị cảnh báo: {lvCanhBao.Items.Count} (ngưỡng ĐTB < {nguong:0.0})";
         }
 
         private void btnTaiLai_Click(object sender, EventArgs e)
         {
-            // TODO (nâng cao): tải lại danh sách cảnh báo.
+            NapDanhSach();
         }
 
         private void btnXuatCsv_Click(object sender, EventArgs e)
         {
-            // TODO (nâng cao): xuất danh sách cảnh báo ra CSV.
+            if (lvCanhBao.Items.Count == 0)
+            {
+                MessageBox.Show("Không có sinh viên nào bị cảnh báo để xuất.", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using SaveFileDialog sfd = new SaveFileDialog
+            {
+                Title = "Xuất danh sách cảnh báo học vụ",
+                Filter = "Tệp CSV (*.csv)|*.csv",
+                FileName = $"CanhBaoHocVu_{DateTime.Now:yyyyMMdd}.csv"
+            };
+
+            if (sfd.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                double nguong = AppConfig.DiemCanhBao;
+                var cacDong = new List<string[]>
+                {
+                    new[] { "MSSV", "Họ tên", "Lớp", "ĐTB tích lũy", "Mức cảnh báo" }
+                };
+
+                foreach (ListViewItem item in lvCanhBao.Items)
+                {
+                    if (item.Tag is SinhVien sv)
+                    {
+                        cacDong.Add(new[]
+                        {
+                            sv.MSSV,
+                            sv.HoTen,
+                            sv.MaLop,
+                            _diemService.TinhDiemTrungBinhTichLuy(sv.MSSV).ToString("0.##", CultureInfo.InvariantCulture),
+                            $"ĐTB dưới ngưỡng {nguong:0.0}"
+                        });
+                    }
+                }
+
+                FileHelpers.GhiCsv(sfd.FileName, cacDong);
+                MessageBox.Show($"Đã xuất danh sách cảnh báo ra tệp:\n{sfd.FileName}", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception loi)
+            {
+                FileHelpers.GhiLog("Lỗi xuất CSV cảnh báo học vụ: " + loi.Message);
+                MessageBox.Show(loi.Message, "Lỗi xuất CSV",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
