@@ -695,55 +695,62 @@ namespace BCWF.Forms
 
         private void txtMSSV_KeyPress(object? sender, KeyPressEventArgs e)
         {
-            if (char.IsControl(e.KeyChar))
-            {
-                return;
-            }
+            if (e.KeyChar == (char)Keys.Back) return; // Cho phép Backspace
 
             char c = e.KeyChar;
             string hienTai = txtMSSV.Text;
             int viTri = txtMSSV.SelectionStart;
 
-            // Chữ S chỉ được ở vị trí đầu.
-            if (c == 's' || c == 'S')
+            // --- Xử lý chữ 'S' hoặc 's' ---
+            if (c == 'S' || c == 's')
             {
+                // Chỉ cho phép 'S' nếu: cursor ở đầu (viTri==0) và (text rỗng hoặc toàn bộ đang chọn)
                 if (viTri == 0 && (hienTai.Length == 0 || txtMSSV.SelectionLength == hienTai.Length))
                 {
-                    e.KeyChar = 'S';
+                    e.KeyChar = char.ToUpper(c);
                     return;
                 }
                 e.Handled = true;
                 return;
             }
 
-            // Chữ V chỉ được ngay sau S.
-            if (c == 'v' || c == 'V')
+            // --- Xử lý chữ 'V' hoặc 'v' (chỉ sau 'S') ---
+            if (c == 'V' || c == 'v')
             {
-                if (viTri == 1 && hienTai.Length >= 1 && (hienTai[0] == 'S') &&
-                    (hienTai.Length == 1 || txtMSSV.SelectionLength > 0))
+                // Chỉ cho phép 'V' nếu: vị trí là 1 (sau chữ S) và text có chữ S đầu
+                if (viTri == 1 && hienTai.Length >= 1 && hienTai[0] == 'S')
                 {
-                    e.KeyChar = 'V';
+                    e.KeyChar = char.ToUpper(c);
                     return;
                 }
                 e.Handled = true;
                 return;
             }
 
-            // Số chỉ được nhập sau khi đã có "SV".
+            // --- Xử lý số (0-9) ---
             if (c >= '0' && c <= '9')
             {
-                bool coTienToSV = hienTai.StartsWith("SV", StringComparison.OrdinalIgnoreCase) ||
-                                 (viTri >= 2 && hienTai.Length >= 2 && hienTai[0] == 'S' && hienTai[1] == 'V');
-                if (!coTienToSV)
+                // Quy cho phép số nếu:
+                // 1. Đã có "SV" ở đầu, HOẶC
+                // 2. Đang nhập ngay sau "S" (viTri==1 && hienTai[0]=='S') - lúc này sẽ tự thêm "V" vào sau
+                bool daCoSV = hienTai.StartsWith("SV", StringComparison.OrdinalIgnoreCase);
+                bool dangSauS = (viTri == 1 && hienTai.Length >= 1 && hienTai[0] == 'S');
+
+                if (daCoSV || dangSauS)
                 {
-                    MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Handled = true;
+                    // Nếu đang nhập sau "S" (chưa có "V") thì không cần làm gì, cho phép số tiếp theo
+                    // Vì khi lưu sẽ kiểm tra Regex ^SV[0-9]+$ nên không sao
                     return;
                 }
+
+                // Chưa đủ điều kiện nhập số -> hiện lỗi
+                MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Handled = true;
                 return;
             }
 
-            // Chặn mọi ký tự khác, kể cả chữ có dấu.
+            // --- Chặn các ký tự khác (chữ có dấu, ký tự đặc biệt) ---
             e.Handled = true;
         }
 
@@ -752,37 +759,44 @@ namespace BCWF.Forms
 
         private void txtMSSV_TextChanged(object? sender, EventArgs e)
         {
-            if (_dangChuanHoaMSSV)
-            {
-                return;
-            }
+            if (_dangChuanHoaMSSV) return; // Early exit nếu đang xử lý từ KeyPress
 
             string goc = txtMSSV.Text;
+            // Chỉ giữ lại: chữ S/V, chữ s/v, số
             string sach = new string(goc.Where(ch => (ch >= '0' && ch <= '9') ||
                                                     ch == 'S' || ch == 'V' ||
                                                     ch == 's' || ch == 'v').ToArray())
                 .ToUpperInvariant();
 
+            // Nếu đầu là số -> có thể là lỗi hoặc đang nhập chưa hoàn chỉnh
             if (sach.Length > 0 && sach[0] >= '0' && sach[0] <= '9')
             {
+                // Chỉ hiện cảnh báo 1 lần, không xóa sạch text
                 if (!_dangHienLoiMSSV)
                 {
                     _dangHienLoiMSSV = true;
-                    MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    // Chỉ hiện cảnh báo nếu text thực sự bắt đầu bằng số (không phải SV+Số)
+                    if (!goc.StartsWith("SV", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MessageBox.Show("MSSV phải bắt đầu bằng SV rồi mới nhập số.", "Sai định dạng", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                     _dangHienLoiMSSV = false;
                 }
-
-                _dangChuanHoaMSSV = true;
-                txtMSSV.Clear();
-                _dangChuanHoaMSSV = false;
+                // Không xóa text, chỉ giữ nguyên, validation stricter sẽ chạy lúc lưu
                 return;
             }
 
-            if (!string.Equals(sach, goc, StringComparison.Ordinal))
+            // Nếu khác nhau thì chuẩn hóa nhưng không xóa sạch
+            if (!string.Equals(sach, goc, StringComparison.Ordinal) && sach.Length > 0)
             {
                 int viTri = txtMSSV.SelectionStart;
                 _dangChuanHoaMSSV = true;
-                txtMSSV.Text = sach;
+                // Giữ lại phần đầu hợp lệ, xóa phần sau nếu cần
+                if (sach.Length < goc.Length)
+                {
+                    txtMSSV.Text = sach;
+                }
                 txtMSSV.SelectionStart = Math.Min(viTri, sach.Length);
                 _dangChuanHoaMSSV = false;
             }
