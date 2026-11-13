@@ -145,14 +145,36 @@ namespace BCWF.Services
         }
 
         /// <summary>
+        /// Sinh viên đã có ít nhất một môn nhập đủ 3 đầu điểm trong học kỳ này hay chưa.
+        /// </summary>
+        public bool CoDiemHocKy(string mssv, string hocKy)
+        {
+            if (string.IsNullOrWhiteSpace(mssv) || string.IsNullOrWhiteSpace(hocKy))
+            {
+                return false;
+            }
+
+            return _store.DangKys.Any(dk =>
+                string.Equals(dk.MSSV, mssv, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(dk.HocKy, hocKy, StringComparison.OrdinalIgnoreCase) &&
+                dk.DaNhapDiem);
+        }
+
+        /// <summary>
         /// Nội dung cột "Ghi chú" của bảng điểm:
-        /// rớt môn / chưa đăng ký / mức cảnh báo học vụ / "Đạt" khi không bị cảnh báo.
+        /// rớt môn / chưa đăng ký / chưa nhập điểm / mức cảnh báo học vụ / "Đạt".
         /// </summary>
         public string LayGhiChu(DangKy? dangKy, double dtbTichLuy, bool coDiemTichLuy)
         {
             if (dangKy == null)
             {
                 return "Chưa đăng ký";
+            }
+
+            // Chưa nhập đủ 3 đầu điểm thì chưa có tổng kết, chưa thể đánh giá.
+            if (!dangKy.DaNhapDiem)
+            {
+                return "Chưa nhập điểm";
             }
 
             if (LaMonRot(dangKy))
@@ -301,7 +323,9 @@ namespace BCWF.Services
                     MaLop = sv.MaLop,
                     DtbTichLuy = dtb,
                     MucCanhBao = muc,
-                    DtbHocKy = string.IsNullOrWhiteSpace(hocKy)
+                    // ĐTB học kỳ chỉ có ý nghĩa khi sinh viên đã có điểm trong học kỳ đó,
+                    // nếu chưa nhập điểm thì để trống.
+                    DtbHocKy = string.IsNullOrWhiteSpace(hocKy) || !CoDiemHocKy(sv.MSSV, hocKy)
                         ? null
                         : TinhDiemTrungBinhHocKy(sv.MSSV, hocKy)
                 };
@@ -439,6 +463,9 @@ namespace BCWF.Services
                 double dtbTichLuy = TinhDiemTrungBinhTichLuy(sv.MSSV);
                 bool coDiemTichLuy = CoDiemTichLuy(sv.MSSV);
 
+                // Chỉ hiện ĐTB tích lũy khi đã nhập đủ 3 đầu điểm của môn này.
+                bool daNhapDiemMon = dangKy != null && dangKy.DaNhapDiem;
+
                 cacDong.Add(new[]
                 {
                     sv.MSSV,
@@ -451,7 +478,7 @@ namespace BCWF.Services
                     DinhDangDiem(dangKy?.DiemCK),
                     tongKet.HasValue ? tongKet.Value.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
                     tongKet.HasValue ? XepLoai(tongKet.Value) : string.Empty,
-                    coDiemTichLuy ? dtbTichLuy.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
+                    daNhapDiemMon && coDiemTichLuy ? dtbTichLuy.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
                     LayGhiChu(dangKy, dtbTichLuy, coDiemTichLuy)
                 });
             }
@@ -493,7 +520,7 @@ namespace BCWF.Services
                     DinhDangDiem(dangKy.DiemCK),
                     tongKet.HasValue ? tongKet.Value.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
                     tongKet.HasValue ? XepLoai(tongKet.Value) : string.Empty,
-                    rot ? "Rớt môn" : string.Empty
+                    rot ? "Rớt môn" : (dangKy.DaNhapDiem ? string.Empty : "Chưa nhập điểm")
                 });
             }
 
