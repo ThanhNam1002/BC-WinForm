@@ -74,6 +74,7 @@ namespace BCWF.Forms
             }
             catch (Exception ex)
             {
+                FileHelpers.GhiLog("Lỗi ghi users.txt khi đổi mật khẩu: " + ex.Message);
                 MessageBox.Show("Không ghi được tệp users.txt: " + ex.Message, "Lỗi",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

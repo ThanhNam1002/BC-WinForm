@@ -28,18 +28,6 @@ namespace BCWF.Services
         /// <summary>Điểm tổng kết dưới ngưỡng này thì bị rớt môn.</summary>
         public const double DiemRot = 4.0;
 
-        /// <summary>Ghi chú: sinh viên chưa đăng ký môn đang xem.</summary>
-        public const string GhiChuChuaDangKy = "Chưa đăng ký";
-
-        /// <summary>Ghi chú: môn học bị rớt (điểm tổng kết &lt; 4).</summary>
-        public const string GhiChuRotMon = "Rớt môn";
-
-        /// <summary>Ghi chú: điểm trung bình tích lũy còn tốt (đạt).</summary>
-        public const string GhiChuDat = "Đạt";
-
-        /// <summary>Ghi chú: điểm trung bình tích lũy đã rớt.</summary>
-        public const string GhiChuRot = "Rớt";
-
         #region Tính điểm
 
         /// <summary>Điểm tổng kết = 0.3*QT + 0.3*GK + 0.4*CK, null nếu chưa đủ 3 đầu điểm.</summary>
@@ -106,44 +94,6 @@ namespace BCWF.Services
         {
             double? tongKet = TinhDiemTongKet(dangKy);
             return tongKet.HasValue && tongKet.Value < DiemRot;
-        }
-
-        /// <summary>
-        /// Sinh viên có điểm trung bình tích lũy từ <see cref="DiemRot"/> trở lên thì được coi là đạt.
-        /// </summary>
-        public bool LaTichLuyDat(double diemTrungBinhTichLuy)
-        {
-            return diemTrungBinhTichLuy >= DiemRot;
-        }
-
-        /// <summary>
-        /// Ghi chú hiển thị trên bảng điểm, theo thứ tự ưu tiên:
-        /// chưa đăng ký môn -> rớt môn (điểm tổng kết &lt; 4) -> ĐTB tích lũy đạt ("Đạt")
-        /// -> ĐTB tích lũy rớt ("Rớt"). Nếu sinh viên chưa có môn nào có điểm thì không ghi chú.
-        /// </summary>
-        public string LayGhiChu(DangKy? dangKy, string mssv)
-        {
-            // Chưa đăng ký môn đang xem: ghi chú cho biết cần đăng ký.
-            if (dangKy == null)
-            {
-                return GhiChuChuaDangKy;
-            }
-
-            // Rớt môn: ưu tiên cao nhất, đã bao gồm cả trường hợp ĐTB tích lũy rớt.
-            if (LaMonRot(dangKy))
-            {
-                return GhiChuRotMon;
-            }
-
-            double diemTrungBinhTichLuy = TinhDiemTrungBinhTichLuy(mssv);
-
-            // Chưa có môn nào có điểm thì chưa đánh giá được tích lũy.
-            if (diemTrungBinhTichLuy <= 0)
-            {
-                return string.Empty;
-            }
-
-            return LaTichLuyDat(diemTrungBinhTichLuy) ? GhiChuDat : GhiChuRot;
         }
 
         /// <summary>Điểm trung bình tích lũy của sinh viên (tính theo tín chỉ các môn đã có điểm).</summary>
@@ -293,6 +243,7 @@ namespace BCWF.Services
             {
                 DangKy? dangKy = TimDangKy(sv.MSSV, maMon, hocKy);
                 double? tongKet = dangKy == null ? null : TinhDiemTongKet(dangKy);
+                bool rot = dangKy != null && LaMonRot(dangKy);
 
                 cacDong.Add(new[]
                 {
@@ -307,7 +258,7 @@ namespace BCWF.Services
                     tongKet.HasValue ? tongKet.Value.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
                     tongKet.HasValue ? XepLoai(tongKet.Value) : string.Empty,
                     TinhDiemTrungBinhTichLuy(sv.MSSV).ToString("0.##", CultureInfo.InvariantCulture),
-                    LayGhiChu(dangKy, sv.MSSV)
+                    rot ? "Rớt môn" : string.Empty
                 });
             }
 
@@ -334,6 +285,7 @@ namespace BCWF.Services
             foreach (DangKy dangKy in LayBangDiemCaNhan(mssv))
             {
                 double? tongKet = TinhDiemTongKet(dangKy);
+                bool rot = LaMonRot(dangKy);
 
                 cacDong.Add(new[]
                 {
@@ -347,7 +299,7 @@ namespace BCWF.Services
                     DinhDangDiem(dangKy.DiemCK),
                     tongKet.HasValue ? tongKet.Value.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
                     tongKet.HasValue ? XepLoai(tongKet.Value) : string.Empty,
-                    LayGhiChu(dangKy, dangKy.MSSV)
+                    rot ? "Rớt môn" : string.Empty
                 });
             }
 
