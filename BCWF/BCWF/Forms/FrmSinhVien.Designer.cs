@@ -251,7 +251,7 @@ namespace BCWF.Forms
             cboLop.Location = new Point(360, 11);
             cboLop.Margin = new Padding(3, 2, 3, 2);
             cboLop.Name = "cboLop";
-            cboLop.Size = new Size(132, 23);
+            cboLop.Size = new Size(174, 23);
             cboLop.TabIndex = 10;
             // 
             // picAnh

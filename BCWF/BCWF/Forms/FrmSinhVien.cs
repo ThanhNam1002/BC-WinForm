@@ -722,10 +722,7 @@ namespace BCWF.Forms
         /// </summary>
         private void txtMSSV_KeyPress(object? sender, KeyPressEventArgs e)
         {
-            if (char.IsControl(e.KeyChar))
-            {
-                return;
-            }
+            if (e.KeyChar == (char)Keys.Back) return; // Cho phép Backspace
 
             // Đang soạn với bộ gõ tiếng Việt: để bộ gõ quyết định ký tự.
             if (_dangComposition)
@@ -771,8 +768,7 @@ namespace BCWF.Forms
         {
             string goc = txtMSSV.Text;
 
-            var chu = new StringBuilder();
-            var so = new StringBuilder();
+        private bool _dangChuanHoaMSSV;
 
             foreach (char ch in goc)
             {
