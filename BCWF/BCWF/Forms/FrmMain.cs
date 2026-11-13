@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using BCWF.Common;
+using BCWF.Services;
 
 namespace BCWF
 {
@@ -50,6 +52,20 @@ namespace BCWF
             tuyChinhMenuItem.DropDownItems.Add(doiMauMenuItem);
             tuyChinhMenuItem.DropDownItems.Add(doiFontMenuItem);
             heThongMenu.DropDownItems.Insert(2, tuyChinhMenuItem);
+
+            // Menu sao lưu / khôi phục dữ liệu (chỉ dành cho quản trị viên).
+            if (LaQuanTri)
+            {
+                var saoLuuMenuItem = new ToolStripMenuItem("Sao lưu dữ liệu");
+                saoLuuMenuItem.Click += SaoLuu_Click;
+                var khoiPhucMenuItem = new ToolStripMenuItem("Khôi phục dữ liệu...");
+                khoiPhucMenuItem.Click += KhoiPhuc_Click;
+
+                var duLieuMenuItem = new ToolStripMenuItem("Dữ liệu");
+                duLieuMenuItem.DropDownItems.Add(saoLuuMenuItem);
+                duLieuMenuItem.DropDownItems.Add(khoiPhucMenuItem);
+                heThongMenu.DropDownItems.Insert(3, duLieuMenuItem);
+            }
 
             Load += FrmMain_Load;
             FormClosing += FrmMain_FormClosing;
@@ -134,6 +150,90 @@ namespace BCWF
                         // Font hệ thống không còn thì giữ font mặc định.
                     }
                 }
+            }
+        }
+
+        #endregion
+
+        #region Sao lưu / khôi phục dữ liệu
+
+        private void SaoLuu_Click(object? sender, EventArgs e)
+        {
+            DialogResult xacNhan = MessageBox.Show(
+                "Sao lưu toàn bộ tệp dữ liệu của thư mục Data sang thư mục Backup?",
+                "Xác nhận sao lưu", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (xacNhan != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                var saoLuu = new Services.BackupService();
+                string thuMuc = saoLuu.SaoLuu();
+                FileHelpers.GhiLog("Đã sao lưu dữ liệu vào " + thuMuc);
+                MessageBox.Show($"Đã sao lưu dữ liệu vào:\n{thuMuc}", "Sao lưu thành công",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception loi)
+            {
+                FileHelpers.GhiLog("Lỗi sao lưu dữ liệu: " + loi.Message);
+                MessageBox.Show(loi.Message, "Lỗi sao lưu",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void KhoiPhuc_Click(object? sender, EventArgs e)
+        {
+            using var chonThuMuc = new FolderBrowserDialog
+            {
+                Description = "Chọn thư mục sao lưu cần khôi phục (trong Data\\Backup).",
+                ShowNewFolderButton = false
+            };
+
+            string thuMucBackup = Path.Combine(DataStore.Instance.DataFolder, "Backup");
+            if (Directory.Exists(thuMucBackup))
+            {
+                chonThuMuc.SelectedPath = thuMucBackup;
+            }
+
+            if (chonThuMuc.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            DialogResult xacNhan = MessageBox.Show(
+                "Khôi phục dữ liệu sẽ GHI ĐÈ toàn bộ tệp .txt hiện tại trong thư mục Data.\n"
+                + "Bạn có chắc muốn khôi phục từ:\n" + chonThuMuc.SelectedPath + "?",
+                "Xác nhận khôi phục", MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+            if (xacNhan != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                var saoLuu = new Services.BackupService();
+                saoLuu.KhoiPhuc(chonThuMuc.SelectedPath);
+                DataStore.Instance.LoadAll();
+
+                // Đóng mọi cửa sổ con và mở lại trang chủ để dữ liệu hiển thị đồng bộ.
+                foreach (Form form in MdiChildren.ToList())
+                {
+                    form.Close();
+                }
+                MoFormCon<Forms.FrmTrangChu>();
+
+                FileHelpers.GhiLog("Đã khôi phục dữ liệu từ " + chonThuMuc.SelectedPath);
+                MessageBox.Show("Đã khôi phục dữ liệu thành công.", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception loi)
+            {
+                FileHelpers.GhiLog("Lỗi khôi phục dữ liệu: " + loi.Message);
+                MessageBox.Show(loi.Message, "Lỗi khôi phục",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
