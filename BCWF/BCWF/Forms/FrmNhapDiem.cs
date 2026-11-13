@@ -230,7 +230,7 @@ namespace BCWF.Forms
             double dtb = _diemService.TinhDiemTrungBinhTichLuy(dong.MSSV);
             item.SubItems[CotDtbTichLuy].Text = dtb > 0 ? dtb.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty;
 
-            item.SubItems[CotGhiChu].Text = rot ? "Rớt môn" : (dong.DangKy == null ? "Chưa đăng ký" : string.Empty);
+            item.SubItems[CotGhiChu].Text = _diemService.LayGhiChu(dong.DangKy, dong.MSSV);
 
             // Tô đỏ dòng khi môn bị rớt.
             item.ForeColor = rot ? Color.Red : SystemColors.WindowText;
@@ -683,7 +683,7 @@ namespace BCWF.Forms
                 item.SubItems.Add(DinhDangDiem(dangKy.DiemCK));
                 item.SubItems.Add(tongKet.HasValue ? tongKet.Value.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty);
                 item.SubItems.Add(tongKet.HasValue ? _diemService.XepLoai(tongKet.Value) : string.Empty);
-                item.SubItems.Add(rot ? "Rớt môn" : string.Empty);
+                item.SubItems.Add(_diemService.LayGhiChu(dangKy, dangKy.MSSV));
                 item.ForeColor = rot ? Color.Red : SystemColors.WindowText;
 
                 lv.Items.Add(item);
