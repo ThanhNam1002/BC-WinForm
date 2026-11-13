@@ -70,13 +70,13 @@ namespace BCWF.Services
             Directory.CreateDirectory(DataFolder);
             Directory.CreateDirectory(ImagesFolder);
 
-            Nap(TepUsers, Users, User.TryParse);
-            Nap(TepKhoa, Khoas, Khoa.TryParse);
-            Nap(TepLop, Lops, Lop.TryParse);
-            Nap(TepSinhVien, SinhViens, SinhVien.TryParse);
-            Nap(TepMonHoc, MonHocs, MonHoc.TryParse);
-            Nap(TepDangKy, DangKys, DangKy.TryParse);
-            Nap(TepLichHoc, LichHocs, LichHoc.TryParse);
+            Nap(TepUsers, TieuDeUsers, Users, User.TryParse);
+            Nap(TepKhoa, TieuDeKhoa, Khoas, Khoa.TryParse);
+            Nap(TepLop, TieuDeLop, Lops, Lop.TryParse);
+            Nap(TepSinhVien, TieuDeSinhVien, SinhViens, SinhVien.TryParse);
+            Nap(TepMonHoc, TieuDeMonHoc, MonHocs, MonHoc.TryParse);
+            Nap(TepDangKy, TieuDeDangKy, DangKys, DangKy.TryParse);
+            Nap(TepLichHoc, TieuDeLichHoc, LichHocs, LichHoc.TryParse);
         }
 
         public void LuuUsers() => Luu(TepUsers, TieuDeUsers, Users, u => u.ToDataLine());
@@ -99,17 +99,45 @@ namespace BCWF.Services
             LuuLichHoc();
         }
 
-        private void Nap<T>(string tenTep, List<T> dich, HamDoc<T> doc) where T : class
+        private void Nap<T>(string tenTep, string tieuDe, List<T> dich, HamDoc<T> doc) where T : class
         {
             dich.Clear();
+            string duongDan = LayDuongDan(tenTep);
             try
             {
-                foreach (string dong in FileHelpers.DocDong(LayDuongDan(tenTep)))
+                // Tự tạo tệp (kèm dòng tiêu đề) nếu chưa có để chương trình chạy được ngay.
+                if (!File.Exists(duongDan))
                 {
+                    FileHelpers.GhiDong(duongDan, new[] { tieuDe });
+                }
+
+                int soDong = 0;
+                int soDongLoi = 0;
+
+                foreach (string dong in FileHelpers.DocDong(duongDan))
+                {
+                    soDong++;
+
+                    // Bỏ qua dòng tiêu đề, không nạp thành bản ghi.
+                    if (string.Equals(dong.Trim(), tieuDe, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     if (doc(dong, out T? banGhi) && banGhi != null)
                     {
                         dich.Add(banGhi);
                     }
+                    else
+                    {
+                        soDongLoi++;
+                    }
+                }
+
+                // Dòng sai định dạng bị bỏ qua nhưng vẫn ghi nhận vào log.txt.
+                if (soDongLoi > 0)
+                {
+                    FileHelpers.GhiLog($"Bỏ qua {soDongLoi}/{soDong} dòng sai định dạng trong {tenTep}.");
                 }
             }
             catch (Exception loi)

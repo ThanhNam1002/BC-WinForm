@@ -142,8 +142,11 @@ namespace BCWF.Services
             for (int i = batDau; i < cacDong.Count; i++)
             {
                 string[] cot = cacDong[i];
+                int soDong = i + 1;
+
                 if (cot.Length < 5)
                 {
+                    FileHelpers.GhiLog($"Bỏ qua dòng {soDong} trong tệp CSV nhập sinh viên: không đủ 5 cột.");
                     continue;
                 }
 
@@ -153,11 +156,20 @@ namespace BCWF.Services
 
                 if (string.IsNullOrWhiteSpace(mssv) || string.IsNullOrWhiteSpace(hoTen) || string.IsNullOrWhiteSpace(maLop))
                 {
+                    FileHelpers.GhiLog($"Bỏ qua dòng {soDong} trong tệp CSV nhập sinh viên: thiếu MSSV/họ tên/lớp.");
+                    continue;
+                }
+
+                // MSSV sai định dạng sẽ không đọc lại được ở lần chạy sau, nên bỏ qua ngay từ lúc nhập.
+                if (!SinhVien.IsValidMSSV(mssv))
+                {
+                    FileHelpers.GhiLog($"Bỏ qua dòng {soDong} trong tệp CSV nhập sinh viên: MSSV '{mssv}' sai định dạng.");
                     continue;
                 }
 
                 if (KiemTraTrungMSSV(mssv))
                 {
+                    FileHelpers.GhiLog($"Bỏ qua dòng {soDong} trong tệp CSV nhập sinh viên: MSSV '{mssv}' đã tồn tại.");
                     continue;
                 }
 

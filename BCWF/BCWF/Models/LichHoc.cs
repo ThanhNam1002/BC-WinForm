@@ -18,6 +18,8 @@ namespace BCWF.Models
 
         public int TietKetThuc => TietBatDau + SoTiet - 1;
 
+        public override string ToString() => $"{MaMon} - Thứ {Thu}, tiết {TietBatDau}-{TietKetThuc}";
+
         public string ToDataLine() => $"{MaMon};{Thu};{TietBatDau};{SoTiet}";
 
         public static bool TryParse(string? dong, out LichHoc? lichHoc)

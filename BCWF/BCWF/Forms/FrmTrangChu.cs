@@ -230,8 +230,10 @@ namespace BCWF.Forms
             var mssvDaDk = new HashSet<string>(_store.DangKys.Select(d => d.MSSV), StringComparer.OrdinalIgnoreCase);
             int svChuaDk = _store.SinhViens.Count(s => !mssvDaDk.Contains(s.MSSV));
 
+            // Chỉ cảnh báo khi sinh viên có khai báo ảnh nhưng tệp ảnh không tồn tại;
+            // sinh viên chưa có ảnh thẻ là trạng thái bình thường, không phải lỗi dữ liệu.
             int svThieuAnh = _store.SinhViens.Count(s =>
-                string.IsNullOrWhiteSpace(s.Anh) ||
+                !string.IsNullOrWhiteSpace(s.Anh) &&
                 !System.IO.File.Exists(_store.LayDuongDanAnh(s.Anh)));
 
             int soSvCanhBao = 0;
@@ -249,10 +251,10 @@ namespace BCWF.Forms
                     nhacViec.Add($"⚠ {g.Key} {(sv == null ? "" : sv.HoTen)}: ĐTB {tb:0.00} < {AppConfig.DiemCanhBao:0.0}");
                 }
             }
-            foreach (var sv in _store.SinhViens.Where(s => string.IsNullOrWhiteSpace(s.Anh) ||
+            foreach (var sv in _store.SinhViens.Where(s => !string.IsNullOrWhiteSpace(s.Anh) &&
                 !System.IO.File.Exists(_store.LayDuongDanAnh(s.Anh))).Take(5))
             {
-                nhacViec.Add($"🖼 {sv.MSSV} {sv.HoTen}: {(string.IsNullOrWhiteSpace(sv.Anh) ? "chưa có ảnh thẻ" : "thiếu tệp ảnh")}");
+                nhacViec.Add($"🖼 {sv.MSSV} {sv.HoTen}: thiếu tệp ảnh thẻ");
             }
             if (svChuaDk > 0)
             {

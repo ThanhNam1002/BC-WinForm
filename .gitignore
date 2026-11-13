@@ -11,6 +11,10 @@
 *.tmp
 *.log
 
+## Tệp sinh ra khi chạy chương trình
+BCWF/BCWF/Data/log.txt
+BCWF/BCWF/Data/Backup/
+
 ## Ảnh thẻ do người dùng thêm khi chạy (giữ lại thư mục rỗng)
 BCWF/BCWF/Data/Images/*
 !BCWF/BCWF/Data/Images/.gitkeep
