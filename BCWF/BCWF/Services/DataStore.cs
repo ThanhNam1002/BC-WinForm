@@ -102,12 +102,20 @@ namespace BCWF.Services
         private void Nap<T>(string tenTep, List<T> dich, HamDoc<T> doc) where T : class
         {
             dich.Clear();
-            foreach (string dong in FileHelpers.DocDong(LayDuongDan(tenTep)))
+            try
             {
-                if (doc(dong, out T? banGhi) && banGhi != null)
+                foreach (string dong in FileHelpers.DocDong(LayDuongDan(tenTep)))
                 {
-                    dich.Add(banGhi);
+                    if (doc(dong, out T? banGhi) && banGhi != null)
+                    {
+                        dich.Add(banGhi);
+                    }
                 }
+            }
+            catch (Exception loi)
+            {
+                FileHelpers.GhiLog($"Lỗi đọc tệp {tenTep}: {loi.Message}");
+                throw;
             }
         }
 
@@ -115,7 +123,15 @@ namespace BCWF.Services
         {
             var cacDong = new List<string> { tieuDe };
             cacDong.AddRange(nguon.Select(sangDong));
-            FileHelpers.GhiDong(LayDuongDan(tenTep), cacDong);
+            try
+            {
+                FileHelpers.GhiDong(LayDuongDan(tenTep), cacDong);
+            }
+            catch (Exception loi)
+            {
+                FileHelpers.GhiLog($"Lỗi ghi tệp {tenTep}: {loi.Message}");
+                throw;
+            }
         }
 
         private static string XacDinhThuMucDuLieu()
