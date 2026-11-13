@@ -129,6 +129,45 @@ namespace BCWF.Services
             return Math.Round(tongDiem / tongTinChi, 2, MidpointRounding.AwayFromZero);
         }
 
+        /// <summary>
+        /// Sinh viên đã có ít nhất một môn nhập đủ 3 đầu điểm hay chưa
+        /// (chưa có thì chưa có ĐTB tích lũy để đánh giá).
+        /// </summary>
+        public bool CoDiemTichLuy(string mssv)
+        {
+            if (string.IsNullOrWhiteSpace(mssv))
+            {
+                return false;
+            }
+
+            return _store.DangKys.Any(dk =>
+                string.Equals(dk.MSSV, mssv, StringComparison.OrdinalIgnoreCase) && dk.DaNhapDiem);
+        }
+
+        /// <summary>
+        /// Nội dung cột "Ghi chú" của bảng điểm:
+        /// rớt môn / chưa đăng ký / "Đạt" khi ĐTB tích lũu đạt yêu cầu / "Chưa đạt".
+        /// </summary>
+        public string LayGhiChu(DangKy? dangKy, double dtbTichLuy, bool coDiemTichLuy)
+        {
+            if (dangKy == null)
+            {
+                return "Chưa đăng ký";
+            }
+
+            if (LaMonRot(dangKy))
+            {
+                return "Rớt môn";
+            }
+
+            if (!coDiemTichLuy)
+            {
+                return string.Empty;
+            }
+
+            return dtbTichLuy >= AppConfig.DiemDatYeuCau ? "Đạt" : "Chưa đạt";
+        }
+
         #endregion
 
         #region Cảnh báo học vụ
@@ -250,7 +289,8 @@ namespace BCWF.Services
             {
                 DangKy? dangKy = TimDangKy(sv.MSSV, maMon, hocKy);
                 double? tongKet = dangKy == null ? null : TinhDiemTongKet(dangKy);
-                bool rot = dangKy != null && LaMonRot(dangKy);
+                double dtbTichLuy = TinhDiemTrungBinhTichLuy(sv.MSSV);
+                bool coDiemTichLuy = CoDiemTichLuy(sv.MSSV);
 
                 cacDong.Add(new[]
                 {
@@ -264,8 +304,8 @@ namespace BCWF.Services
                     DinhDangDiem(dangKy?.DiemCK),
                     tongKet.HasValue ? tongKet.Value.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
                     tongKet.HasValue ? XepLoai(tongKet.Value) : string.Empty,
-                    TinhDiemTrungBinhTichLuy(sv.MSSV).ToString("0.##", CultureInfo.InvariantCulture),
-                    rot ? "Rớt môn" : string.Empty
+                    coDiemTichLuy ? dtbTichLuy.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty,
+                    LayGhiChu(dangKy, dtbTichLuy, coDiemTichLuy)
                 });
             }
 

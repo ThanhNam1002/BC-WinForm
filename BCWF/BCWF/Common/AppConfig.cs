@@ -32,6 +32,9 @@ namespace BCWF.Common
         /// <summary>Ngưỡng điểm trung bình tích lũy bị cảnh báo học vụ.</summary>
         public static double DiemCanhBao => LaySoThuc("DiemCanhBao", 1.0);
 
+        /// <summary>Điểm trung bình tích lũy tối thiểu để được xếp loại "Đạt" ở cột Ghi chú.</summary>
+        public static double DiemDatYeuCau => LaySoThuc("DiemDatYeuCau", 2.0);
+
         /// <summary>Đọc một khóa cấu hình bất kỳ, trả về null nếu không có.</summary>
         public static string? LayChuoi(string khoa, string? macDinh = null)
         {
