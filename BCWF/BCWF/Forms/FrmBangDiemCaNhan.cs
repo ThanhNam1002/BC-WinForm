@@ -65,7 +65,7 @@ namespace BCWF.Forms
                 item.SubItems.Add(DinhDangDiem(dangKy.DiemCK));
                 item.SubItems.Add(tongKet.HasValue ? tongKet.Value.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty);
                 item.SubItems.Add(tongKet.HasValue ? _diemService.XepLoai(tongKet.Value) : string.Empty);
-                item.SubItems.Add(rot ? "Rớt môn" : string.Empty);
+                item.SubItems.Add(rot ? "Rớt môn" : (dangKy.DaNhapDiem ? string.Empty : "Chưa nhập điểm"));
                 item.ForeColor = rot ? Color.Red : SystemColors.WindowText;
 
                 lv.Items.Add(item);

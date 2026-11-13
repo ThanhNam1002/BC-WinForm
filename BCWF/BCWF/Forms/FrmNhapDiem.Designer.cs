@@ -123,7 +123,7 @@ namespace BCWF.Forms
             // 
             cboHocKy.DropDownStyle = ComboBoxStyle.DropDownList;
             cboHocKy.FormattingEnabled = true;
-            cboHocKy.Items.AddRange(new object[] { "HK1", "HK2", "HK3" });
+            cboHocKy.Items.AddRange(new object[] { "HK1", "HK2" });
             cboHocKy.Location = new Point(614, 14);
             cboHocKy.Name = "cboHocKy";
             cboHocKy.Size = new Size(90, 28);
