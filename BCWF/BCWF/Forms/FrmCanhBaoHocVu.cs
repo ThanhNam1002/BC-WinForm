@@ -52,7 +52,7 @@ namespace BCWF.Forms
             cboHocKy.Items.Add(TatCa);
             foreach (string hocKy in _store.DangKys
                 .Select(dk => dk.HocKy)
-                .Where(hk => !string.IsNullOrWhiteSpace(hk))
+                .Where(hk => !string.IsNullOrWhiteSpace(hk) && !hk.Equals("HK3", StringComparison.OrdinalIgnoreCase))
                 .Distinct()
                 .OrderBy(hk => hk))
             {

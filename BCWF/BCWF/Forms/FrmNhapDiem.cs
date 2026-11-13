@@ -408,11 +408,16 @@ namespace BCWF.Forms
 
             double dtb = _diemService.TinhDiemTrungBinhTichLuy(dong.MSSV);
             bool coDiemTichLuy = _diemService.CoDiemTichLuy(dong.MSSV);
-            item.SubItems[CotDtbTichLuy].Text = coDiemTichLuy
+
+            // Chỉ hiện ĐTB tích lũy khi đã nhập đủ 3 đầu điểm (QT, GK, CK) của môn đang xem.
+            // Nếu 3 cột điểm còn trống thì cột ĐTB tích lũy để trống.
+            bool daNhapDiemMon = dong.DangKy != null && dong.DangKy.DaNhapDiem;
+
+            item.SubItems[CotDtbTichLuy].Text = daNhapDiemMon && coDiemTichLuy
                 ? dtb.ToString("0.##", CultureInfo.InvariantCulture)
                 : string.Empty;
 
-            // Ghi chú: rớt môn / chưa đăng ký / "Đạt" nếu ĐTB tích lũu đạt yêu cầu.
+            // Ghi chú: rớt môn / chưa đăng ký / chưa nhập điểm / mức cảnh báo / đạt.
             item.SubItems[CotGhiChu].Text = _diemService.LayGhiChu(dong.DangKy, dtb, coDiemTichLuy);
 
             // Tô đỏ dòng khi môn bị rớt.
